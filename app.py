@@ -2,8 +2,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
-from datetime import date
-import requests
 
 # ---------------- Page Config ----------------
 st.set_page_config(page_title="Student Skill Roadmap", layout="centered")
@@ -11,11 +9,16 @@ st.set_page_config(page_title="Student Skill Roadmap", layout="centered")
 # ---------------- Load Dataset ----------------
 @st.cache_data
 def load_data():
-    return pd.read_csv("student_performance_extended.csv")
+    try:
+        df = pd.read_csv("student_performance_extended.csv")
+        return df
+    except FileNotFoundError:
+        st.warning("Dataset file not found. Please upload student_performance_extended.csv")
+        return pd.DataFrame()
 
 data = load_data()
 
-# ---------------- Placement Prediction (Rule-Based) ----------------
+# ---------------- Placement Prediction ----------------
 def placement_success_prediction(info):
     score = 0
 
@@ -30,58 +33,28 @@ def placement_success_prediction(info):
         score += 8
 
     sh = int(info.get("study_hours", 0))
-    if sh >= 5:
-        score += 15
-    elif sh >= 3:
-        score += 10
-    else:
-        score += 5
+    score += 15 if sh >= 5 else 10 if sh >= 3 else 5
 
     skill = info.get("skill_level", "Beginner")
-    if skill == "Advanced":
-        score += 20
-    elif skill == "Intermediate":
-        score += 15
-    else:
-        score += 8
+    score += 20 if skill == "Advanced" else 15 if skill == "Intermediate" else 8
 
     comm = info.get("communication", "Average")
-    if comm == "Good":
-        score += 15
-    elif comm == "Average":
-        score += 10
-    else:
-        score += 5
+    score += 15 if comm == "Good" else 10 if comm == "Average" else 5
 
     stress = info.get("stress_level", "Medium")
-    if stress == "Low":
-        score += 10
-    elif stress == "Medium":
-        score += 7
-    else:
-        score += 4
+    score += 10 if stress == "Low" else 7 if stress == "Medium" else 4
 
     sleep = int(info.get("sleep_hours", 6))
-    if sleep >= 7:
-        score += 10
-    elif sleep >= 6:
-        score += 7
-    else:
-        score += 4
+    score += 10 if sleep >= 7 else 7 if sleep >= 6 else 4
 
     failures = int(info.get("failures", 0))
     score -= min(failures * 2, 5)
 
     score = max(0, min(score, 100))
-
-    if score >= 75:
-        level = "High"
-    elif score >= 50:
-        level = "Medium"
-    else:
-        level = "Low"
+    level = "High" if score >= 75 else "Medium" if score >= 50 else "Low"
 
     return score, level
+
 
 # ---------------- Readiness Score ----------------
 def readiness_breakdown(info):
@@ -90,8 +63,7 @@ def readiness_breakdown(info):
     routine = 20 if info["sleep_hours"] >= 7 else 15 if info["sleep_hours"] >= 6 else 8
     communication = 20 if info["communication"] == "Good" else 15 if info["communication"] == "Average" else 8
 
-    total = academics + skills + routine + communication
-    total = min(total, 100)
+    total = min(academics + skills + routine + communication, 100)
 
     return {
         "Academics": academics,
@@ -101,71 +73,57 @@ def readiness_breakdown(info):
         "Total": total
     }
 
+
 # ---------------- Analytics Dashboard ----------------
 def show_analytics_dashboard(df):
     st.markdown("## 📊 Advanced Analytics Dashboard")
 
     if df.empty:
-        st.warning("Dataset is empty.")
+        st.info("No dataset available to analyze.")
         return
 
     col1, col2, col3 = st.columns(3)
     col1.metric("Total Students", len(df))
+
     if "gpa" in df.columns:
         col2.metric("Average GPA", f"{df['gpa'].mean():.2f}")
+
     if "study_hours" in df.columns:
         col3.metric("Avg Study Hours", f"{df['study_hours'].mean():.2f}")
 
     st.divider()
 
-    if "gpa" in df.columns and "study_hours" in df.columns:
+    if {"gpa", "study_hours"}.issubset(df.columns):
         st.subheader("📈 GPA vs Study Hours")
-        fig = px.scatter(df, x="study_hours", y="gpa",
-                         color="gpa", template="plotly_dark")
+        fig = px.scatter(df, x="study_hours", y="gpa", color="gpa", template="plotly_dark")
         st.plotly_chart(fig, use_container_width=True)
 
-    if "branch" in df.columns and "gpa" in df.columns:
+    if {"branch", "gpa"}.issubset(df.columns):
         st.subheader("🎓 Branch-wise Average GPA")
         branch_avg = df.groupby("branch")["gpa"].mean().reset_index()
-        fig = px.bar(branch_avg, x="branch", y="gpa",
-                     color="gpa", template="plotly_dark")
+        fig = px.bar(branch_avg, x="branch", y="gpa", color="gpa", template="plotly_dark")
         st.plotly_chart(fig, use_container_width=True)
 
     if "stress_level" in df.columns:
         st.subheader("😰 Stress Level Distribution")
-        fig = px.histogram(df, x="stress_level",
-                           color="stress_level", template="plotly_dark")
+        fig = px.histogram(df, x="stress_level", color="stress_level", template="plotly_dark")
         st.plotly_chart(fig, use_container_width=True)
 
     if "skill_level" in df.columns:
         st.subheader("🧠 Skill Level Distribution")
-        fig = px.pie(df, names="skill_level",
-                     template="plotly_dark")
+        fig = px.pie(df, names="skill_level", template="plotly_dark")
         st.plotly_chart(fig, use_container_width=True)
 
-    if "year" in df.columns and "gpa" in df.columns:
+    if {"year", "gpa"}.issubset(df.columns):
         st.subheader("📚 Year-wise Performance")
         year_avg = df.groupby("year")["gpa"].mean().reset_index()
-        fig = px.line(year_avg, x="year", y="gpa",
-                      markers=True, template="plotly_dark")
+        fig = px.line(year_avg, x="year", y="gpa", markers=True, template="plotly_dark")
         st.plotly_chart(fig, use_container_width=True)
 
-# ---------------- GitHub Pull Requests ----------------
-@st.cache_data
-def fetch_github_prs(owner, repo, token=None):
-    url = f"https://api.github.com/repos/{owner}/{repo}/pulls?state=all"
-    headers = {"Authorization": f"token {token}"} if token else {}
-    response = requests.get(url, headers=headers)
-    if response.status_code == 200:
-        return response.json()
-    else:
-        st.error(f"Failed to fetch PRs: {response.status_code}")
-        return []
 
 # ---------------- UI ----------------
 st.title("🎓 Student Skill Roadmap & Placement Predictor")
 st.caption("RTP Project | Rule-Based Intelligence + Analytics Dashboard")
-
 st.divider()
 
 # Student Input
@@ -220,11 +178,9 @@ if st.button("🔍 Generate Report"):
     else:
         st.error("Low chances — Immediate improvement needed.")
 
-    st.caption("Rule-based placement evaluation (No ML used).")
     st.divider()
 
-    # Tabs: Roadmap | Analytics | GitHub PRs
-    tab1, tab2, tab3 = st.tabs(["🧭 Roadmap", "📊 Analytics", "🔀 GitHub PRs"])
+    tab1, tab2 = st.tabs(["🧭 Roadmap", "📊 Analytics"])
 
     with tab1:
         st.write("### 4-Week Skill Plan")
@@ -236,39 +192,12 @@ if st.button("🔍 Generate Report"):
     with tab2:
         show_analytics_dashboard(data)
 
-    with tab3:
-        st.write("### Fetch GitHub Pull Requests")
-        owner = st.text_input("GitHub Owner/User", "your-username", key="owner")
-        repo = st.text_input("Repository Name", "your-repo", key="repo")
-        token = st.text_input("GitHub Token (optional for private repos)", type="password", key="token")
-
-        if st.button("Fetch PRs", key="fetch_prs"):
-            prs = fetch_github_prs(owner, repo, token or None)
-            if prs:
-                for pr in prs:
-                    st.markdown(f"**#{pr['number']} {pr['title']}** by {pr['user']['login']}")
-                    st.write(f"State: {pr['state']} | Created at: {pr['created_at']}")
-                    st.markdown("---")
-            else:
-                st.info("No pull requests found.")
-
 st.divider()
 
 with st.expander("📊 Dataset Preview"):
-    st.dataframe(data)
+    if not data.empty:
+        st.dataframe(data)
+    else:
+        st.info("No dataset loaded.")
 
 st.caption("Mini RTP Project | Student Skill Roadmap System")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
