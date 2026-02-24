@@ -1,4 +1,4 @@
-# app_unique_corrected.py
+# app_unique_modern.py
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -6,39 +6,43 @@ from streamlit_lottie import st_lottie
 import requests
 
 # ---------------- Page Config ----------------
-st.set_page_config(
-    page_title="Student Skill Dashboard",
-    layout="centered"
-)
+st.set_page_config(page_title="Student Skill Dashboard", layout="centered")
 
-# ---------------- Gradient Background & CSS ----------------
+# ---------------- CSS ----------------
 st.markdown("""
 <style>
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 header {visibility: hidden;}
+.stApp {background: linear-gradient(to bottom, #fdfbfb, #ebedee); color:#111827;}
 
-.stApp { background: linear-gradient(to bottom, #e0f7fa, #f0f4c3); color: #111827; }
+/* Hero Card */
+.hero-card { background: linear-gradient(135deg,#a1c4fd,#c2e9fb); padding:25px; border-radius:25px; margin-bottom:20px; text-align:center; box-shadow: 0 5px 20px rgba(0,0,0,0.1);}
+.profile-pic {border-radius:50%; width:100px; height:100px; object-fit:cover; margin-bottom:15px;}
 
-/* Hero Section */
-.hero { background-color: rgba(255,255,255,0.8); border-radius: 25px; padding: 30px; text-align: center; box-shadow: 0px 5px 20px rgba(0,0,0,0.15); margin-bottom: 20px; }
-
-/* Student Background Card */
-.background-card { background-color: #ffffff; padding: 20px; border-radius: 20px; box-shadow: 0px 5px 15px rgba(0,0,0,0.1); margin-bottom: 20px; display:flex; align-items:center; }
-.profile-pic { border-radius:50%; width:80px; height:80px; margin-right:20px; object-fit:cover; }
+/* Mini Radials inside Hero */
+.mini-radial { display:inline-block; margin:0 10px; }
 
 /* Step Cards */
-.step-card { background-color: #ffffff; padding: 20px; border-left: 8px solid #2563eb; border-radius: 15px; margin-bottom: 20px; box-shadow: 0px 5px 15px rgba(0,0,0,0.1); }
+.step-card { background:#ffffff; padding:20px; border-radius:20px; box-shadow:0 5px 15px rgba(0,0,0,0.1); margin-bottom:20px; }
 
-/* Timeline */
-.timeline { position: relative; margin: 20px 0; padding-left: 40px; }
-.timeline::before { content: ''; position: absolute; left: 20px; top: 0; width: 4px; height: 100%; background: #2563eb; border-radius: 2px; }
-.timeline-item { position: relative; margin-bottom: 20px; }
-.timeline-item::before { content: ''; position: absolute; left: 12px; width: 16px; height: 16px; background: #ff6f61; border-radius: 50%; top: 0; }
+/* Roadmap */
+.roadmap-card { background:#ffffff; padding:20px; border-left:10px solid; border-radius:15px; margin-bottom:15px; }
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------- Load Dataset ----------------
+# ---------------- Lottie ----------------
+def load_lottie(url):
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
+
+lottie_success = load_lottie("https://assets10.lottiefiles.com/packages/lf20_jbrw3hcz.json")
+lottie_improve = load_lottie("https://assets2.lottiefiles.com/packages/lf20_jtbfg2nb.json")
+lottie_hero = load_lottie("https://assets2.lottiefiles.com/packages/lf20_hzgq1iov.json")
+
+# ---------------- Dataset ----------------
 @st.cache_data
 def load_data():
     try:
@@ -47,18 +51,7 @@ def load_data():
         return pd.DataFrame()
 data = load_data()
 
-# ---------------- Lottie ----------------
-def load_lottieurl(url: str):
-    r = requests.get(url)
-    if r.status_code != 200:
-        return None
-    return r.json()
-
-lottie_success = load_lottieurl("https://assets10.lottiefiles.com/packages/lf20_jbrw3hcz.json")
-lottie_improve = load_lottieurl("https://assets2.lottiefiles.com/packages/lf20_jtbfg2nb.json")
-lottie_hero = load_lottieurl("https://assets2.lottiefiles.com/packages/lf20_hzgq1iov.json")
-
-# ---------------- Placement Prediction ----------------
+# ---------------- Prediction ----------------
 def placement_success_prediction(info):
     score = 0
     gpa = float(info.get("gpa",0))
@@ -79,7 +72,6 @@ def placement_success_prediction(info):
     level = "High" if score>=75 else "Medium" if score>=50 else "Low"
     return score, level
 
-# ---------------- Readiness ----------------
 def readiness_breakdown(info):
     academics = min(int(info["gpa"]*3),30)
     skills = 20 if info["skill_level"]=="Advanced" else 15 if info["skill_level"]=="Intermediate" else 10
@@ -88,14 +80,11 @@ def readiness_breakdown(info):
     total = min(academics+skills+routine+communication,100)
     return {"Academics":academics,"Skills":skills,"Routine":routine,"Communication":communication,"Total":total}
 
-# ---------------- Hero Section ----------------
-st.markdown('<div class="hero"><h1>🚀 Student Skill Dashboard</h1><p>Track Readiness, Placement & Roadmap</p></div>', unsafe_allow_html=True)
-st_lottie(lottie_hero,height=200)
-
-# ---------------- Student Input ----------------
-st.markdown('<div class="step-card"><h3>Enter Student Details</h3></div>', unsafe_allow_html=True)
+# ---------------- Hero ----------------
+st.markdown('<div class="hero-card">', unsafe_allow_html=True)
+st_lottie(lottie_hero,height=150)
 name = st.text_input("Student Name")
-profile_pic_url = st.text_input("Profile Picture URL (optional)")
+profile_pic = st.text_input("Profile Picture URL (optional)")
 year = st.selectbox("Year",[1,2,3,4])
 branch = st.selectbox("Branch",["CSE","IT","ECE","EEE"])
 gpa = st.slider("GPA",0.0,10.0,7.0,0.1)
@@ -106,53 +95,35 @@ skill_level = st.selectbox("Skill Level",["Beginner","Intermediate","Advanced"])
 stress_level = st.selectbox("Stress Level",["Low","Medium","High"])
 communication = st.selectbox("Communication",["Poor","Average","Good"])
 
-if st.button("📊 Generate Dashboard"):
+if profile_pic:
+    st.markdown(f'<img src="{profile_pic}" class="profile-pic">',unsafe_allow_html=True)
+st.markdown(f"<h2>{name or 'Student Name'}</h2>",unsafe_allow_html=True)
+st.markdown(f"<p>Year {year} | Branch: {branch}</p>",unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 
-    info = {
-        "gpa":gpa,
-        "study_hours":study_hours,
-        "failures":failures,
-        "sleep_hours":sleep_hours,
-        "skill_level":skill_level,
-        "stress_level":stress_level,
-        "communication":communication
-    }
+# ---------------- Generate Dashboard ----------------
+if st.button("Generate Dashboard"):
 
-    # ---------------- Student Background ----------------
-    pic_html = f'<img src="{profile_pic_url}" class="profile-pic">' if profile_pic_url else ''
-    st.markdown(f'''
-    <div class="background-card">{pic_html}
-        <div>
-            <h3>{name or "Student Name"}</h3>
-            <p>Year: {year} | Branch: {branch}</p>
-        </div>
-    </div>
-    ''', unsafe_allow_html=True)
+    info = {"gpa":gpa,"study_hours":study_hours,"failures":failures,"sleep_hours":sleep_hours,
+            "skill_level":skill_level,"stress_level":stress_level,"communication":communication}
 
-    # ---------------- Step Cards ----------------
-    metrics = {
-        "GPA": gpa,
-        "Study Hours": study_hours,
-        "Skill Level": skill_level,
-        "Sleep Hours": sleep_hours,
-        "Communication": communication
-    }
-    for key,value in metrics.items():
-        st.markdown(f'<div class="step-card"><h4>{key}</h4><p style="font-size:22px">{value}</p></div>', unsafe_allow_html=True)
-
-    # ---------------- Readiness Radial ----------------
+    # Readiness & Placement Mini Radials
     score = readiness_breakdown(info)
-    st.markdown('<div class="step-card"><h4>Readiness Score</h4></div>', unsafe_allow_html=True)
-    fig_radial = px.pie(names=["Completed","Remaining"], values=[score["Total"],100-score["Total"]],
-                        hole=0.7, color_discrete_sequence=["#2563eb","#d1d5db"])
-    fig_radial.update_layout(showlegend=False, margin=dict(t=0,b=0,l=0,r=0))
-    st.plotly_chart(fig_radial,use_container_width=True)
-
-    # ---------------- Placement ----------------
     placement_score, placement_level = placement_success_prediction(info)
-    st.markdown('<div class="step-card"><h4>Placement Prediction</h4></div>', unsafe_allow_html=True)
-    st.progress(placement_score/100)
-    st.write(f"Score: {placement_score}/100")
+    st.markdown(f'''
+    <div style="text-align:center">
+        <div class="mini-radial"><b>Readiness</b><br>{score['Total']}%</div>
+        <div class="mini-radial"><b>Placement</b><br>{placement_score}%</div>
+    </div>
+    ''',unsafe_allow_html=True)
+
+    # Metrics Step Cards
+    metrics = {"GPA":gpa,"Study Hours":study_hours,"Skill Level":skill_level,
+               "Sleep Hours":sleep_hours,"Communication":communication}
+    for k,v in metrics.items():
+        st.markdown(f'<div class="step-card"><h4>{k}</h4><p style="font-size:22px">{v}</p></div>',unsafe_allow_html=True)
+
+    # Placement Status with Animation
     if placement_level=="High":
         st.success("High chances 🎉")
         st_lottie(lottie_success,height=150)
@@ -162,18 +133,18 @@ if st.button("📊 Generate Dashboard"):
         st.error("Low chances")
         st_lottie(lottie_improve,height=150)
 
-    # ---------------- 4-Week Roadmap ----------------
-    st.markdown('<div class="step-card"><h4>🧭 4-Week Skill Roadmap</h4></div>', unsafe_allow_html=True)
-    st.markdown("""
-    <div class="timeline">
-        <div class="timeline-item"><b>Week 1:</b> 📖 Fundamentals</div>
-        <div class="timeline-item"><b>Week 2:</b> ⚙️ Practice + Mini Project</div>
-        <div class="timeline-item"><b>Week 3:</b> 🛠 Major Project</div>
-        <div class="timeline-item"><b>Week 4:</b> 🎯 Resume + Mock Interview</div>
-    </div>
-    """, unsafe_allow_html=True)
+    # 4-Week Roadmap Modern Style
+    roadmap = [
+        ("Week 1","📖 Fundamentals","#ff6f61"),
+        ("Week 2","⚙️ Practice + Mini Project","#f9d423"),
+        ("Week 3","🛠 Major Project","#6a2c70"),
+        ("Week 4","🎯 Resume + Mock Interview","#4a90e2")
+    ]
+    st.markdown("<h3>🧭 4-Week Skill Roadmap</h3>",unsafe_allow_html=True)
+    for week,title,color in roadmap:
+        st.markdown(f'<div class="roadmap-card" style="border-color:{color}"><b>{week}:</b> {title}</div>',unsafe_allow_html=True)
 
-    # ---------------- Analytics ----------------
+    # Analytics Dashboard
     if not data.empty:
         st.markdown('<div class="step-card"><h4>📊 Analytics Dashboard</h4></div>', unsafe_allow_html=True)
         st.metric("Total Students", len(data))
@@ -199,8 +170,8 @@ if st.button("📊 Generate Dashboard"):
                              template="plotly_white",title="Skill Levels")
             st.plotly_chart(fig_pie,use_container_width=True)
 
-# ---------------- Dataset Preview ----------------
+# Dataset Preview
 with st.expander("📊 Dataset Preview"):
     st.dataframe(data)
 
-st.caption("🚀 Modern Student Skill Dashboard | Unique Design | Student Background + Correct Roadmap Order")
+st.caption("🚀 Unique Modern Student Skill Dashboard | Gradient Hero | Colorful Roadmap | Analytics")
