@@ -125,7 +125,7 @@ small, .stCaption { color: rgba(229,231,235,.75) !important; }
 # ---------------- Load dataset ----------------
 @st.cache_data
 def load_data():
-    df = pd.read_csv("student_performance_extended.csv")
+    df = pd.read_csv("student_performance_final.csv")
     df.columns = df.columns.str.lower()
     return df
 
@@ -605,6 +605,7 @@ with st.expander("📊 Sample Student Dataset (Preview)", expanded=False):
     st.dataframe(data, use_container_width=True)
 
 st.caption("Mini Project | Student Skill Roadmap | Streamlit Web App")
+
 
 
 
