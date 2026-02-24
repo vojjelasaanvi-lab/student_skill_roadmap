@@ -125,7 +125,9 @@ small, .stCaption { color: rgba(229,231,235,.75) !important; }
 # ---------------- Load dataset ----------------
 @st.cache_data
 def load_data():
-    return pd.read_csv("student_performance_extended.csv")
+   df = pd.read_csv("student_performance_extended.csv")
+    df.columns = df.columns.str.lower()
+    return df
 
 data = load_data()
 
