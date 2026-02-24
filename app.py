@@ -1,7 +1,6 @@
-# app_unique_with_background.py
+# app_unique_corrected.py
 import streamlit as st
 import pandas as pd
-import numpy as np
 import plotly.express as px
 from streamlit_lottie import st_lottie
 import requests
@@ -204,4 +203,4 @@ if st.button("📊 Generate Dashboard"):
 with st.expander("📊 Dataset Preview"):
     st.dataframe(data)
 
-st.caption("🚀 Modern Student Skill Dashboard | Unique Design | Student Background Added")
+st.caption("🚀 Modern Student Skill Dashboard | Unique Design | Student Background + Correct Roadmap Order")
