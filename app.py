@@ -163,6 +163,26 @@ input, textarea {
 .stAlert {
     color: #ffffff !important;
 }
+/* Dropdown menu background */
+[data-baseweb="popover"] {
+    background-color: #0b1220 !important;
+}
+
+/* Dropdown option text */
+[data-baseweb="menu"] div {
+    color: #ffffff !important;
+    background-color: #0b1220 !important;
+}
+
+/* Dropdown option hover */
+[data-baseweb="menu"] div:hover {
+    background-color: rgba(99,102,241,0.3) !important;
+}
+
+/* Selected option */
+[data-baseweb="select"] span {
+    color: #ffffff !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
