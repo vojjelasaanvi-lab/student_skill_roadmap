@@ -762,16 +762,16 @@ def generate_structured_roadmap(info, df):
 # Use course database resources
     resources = course_resources
     projects = course_projects
-  return {
-    "similar_note": sim_note,
-    "goals": goals,
-    "risks": risks,
-    "habits": habits,
-    "steps": steps,
-    "week_plan": week_plan,
-    "resources": resources,
-    "projects": projects,
-}
+    return {
+      "similar_note": sim_note,
+      "goals": goals,
+      "risks": risks,
+      "habits": habits,
+      "steps": steps,
+      "week_plan": week_plan,
+      "resources": resources,
+      "projects": projects,
+  }
 
 def roadmap_to_markdown(name, info, roadmap):
     def s(x):
