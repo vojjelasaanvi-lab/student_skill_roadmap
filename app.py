@@ -756,7 +756,7 @@ def generate_structured_roadmap(info, df):
     if info["communication"] in ("Poor", "Low"):
         steps.append("Communication: 2 short talks/week + write 1 summary/day (5–7 lines).")
 
-     week_plan, course_resources, course_projects = build_week_plan(
+    week_plan, course_resources, course_projects = build_week_plan(
         info["interest"], info["skill_level"], info["budget"]
 )
 # Use course database resources
