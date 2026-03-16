@@ -161,55 +161,543 @@ def get_similar_students(df, info):
             f = f[f[col] == info[k]]
 
     return f
+# =========================
+# FULL COURSE DATABASE
+# =========================
+COURSE_DB = {
+    # ---------- CSE / Data / AI ----------
+    "ML": {
+        "courses": [
+            "Andrew Ng — Machine Learning Specialization (Coursera)",
+            "Krish Naik — Machine Learning Playlist (YouTube)",
+            "fast.ai — Practical Deep Learning for Coders",
+        ],
+        "weeks": [
+            "Python + Numpy/Pandas + basics of ML (Regression, metrics).",
+            "Scikit-learn: Decision Trees, Random Forest, model validation.",
+            "Feature engineering + classification + overfitting control.",
+            "Project: Build an end-to-end ML app and deploy via Streamlit.",
+        ],
+        "projects": [
+            "House Price Predictor",
+            "Student Performance Dashboard + Prediction",
+            "Customer Segmentation (K-Means)",
+        ],
+    },
 
+    "WEB": {
+        "courses": [
+            "The Odin Project (Full Stack foundations)",
+            "FreeCodeCamp — Responsive Web Design",
+            "JavaScript/React Crash Course (YouTube) + practice projects",
+        ],
+        "weeks": [
+            "HTML + CSS (Flex/Grid) + build 1 landing page.",
+            "JavaScript (DOM, ES6, Fetch API) + small interactive UI.",
+            "React basics (components, state, props) + mini app.",
+            "Project: Deploy a portfolio-grade site/app (GitHub Pages/Vercel).",
+        ],
+        "projects": [
+            "Portfolio Website (Dark mode + sections)",
+            "To-do App (LocalStorage)",
+            "Mini E-commerce Product Gallery UI",
+        ],
+    },
+
+    "DSA": {
+        "courses": [
+            "Striver A2Z DSA Sheet (TakeUForward)",
+            "NeetCode 150 (structured problems)",
+            "Abdul Bari — Algorithms (YouTube)",
+        ],
+        "weeks": [
+            "Arrays/Strings + time complexity + 20 problems.",
+            "Linked List + Stack/Queue + 15 problems.",
+            "Trees + Recursion/Backtracking + 12 problems.",
+            "Sorting/Searching + DP basics + mock interview set.",
+        ],
+        "projects": [
+            "Sorting Visualizer",
+            "Sudoku Solver",
+            "Pathfinding Visualizer (BFS/Dijkstra)",
+        ],
+    },
+
+    "CYBER": {
+        "courses": [
+            "TryHackMe — Pre Security / Beginner Path",
+            "OverTheWire (Bandit) — Linux basics practice",
+            "YouTube: Networking + Web security basics (OWASP Top 10)",
+        ],
+        "weeks": [
+            "Linux + networking basics + command line practice.",
+            "Web fundamentals + OWASP Top 10 (SQLi, XSS, auth issues).",
+            "Hands-on labs (TryHackMe rooms) + write notes.",
+            "Project: Security checklist + demo report (mini pentest style).",
+        ],
+        "projects": [
+            "Basic Web Security Audit Report (OWASP checklist)",
+            "Password strength checker + hashing demo",
+            "Phishing awareness mini-site (educational)",
+        ],
+    },
+
+    # ---------- ECE ----------
+    "ECE": {
+        "courses": [
+            "NPTEL — Digital Circuits / Microprocessors (choose 1)",
+            "Embedded Systems (Arduino/ESP32) playlist (YouTube)",
+            "VLSI Basics / Communication Systems intro (NPTEL/YouTube)",
+        ],
+        "weeks": [
+            "Core: C basics + digital logic fundamentals (gates, flip-flops).",
+            "Embedded basics: Arduino/ESP32 + sensors (read data, print/plot).",
+            "Choose one: VLSI basics OR Communication Systems basics.",
+            "Project: Mini IoT/Embedded demo + documentation + results.",
+        ],
+        "projects": [
+            "IoT Temperature/Humidity Monitor (sensor + dashboard)",
+            "Arduino Sensor Data Logger",
+            "Mini Communication System simulation report (basic)",
+        ],
+    },
+
+    "COMM_SYSTEMS": {
+        "courses": [
+            "NPTEL — Communication Systems",
+            "Signals & Systems basics (YouTube/NPTEL)",
+            "MATLAB/Python signal processing basics (tutorial series)",
+        ],
+        "weeks": [
+            "Signals basics: sampling, frequency, noise concept.",
+            "AM/FM basics + modulation/demodulation understanding.",
+            "Digital comm intro: ASK/FSK/PSK concept + simple plots.",
+            "Project: small simulation notebook + report (plots + explanation).",
+        ],
+        "projects": [
+            "AM/FM simulation notebook",
+            "Noise impact on signal plots",
+            "Digital modulation demo (basic)",
+        ],
+    },
+
+    "VLSI": {
+        "courses": [
+            "NPTEL — VLSI Design",
+            "Digital Electronics (NPTEL/YouTube)",
+            "Verilog basics playlist (YouTube)",
+        ],
+        "weeks": [
+            "Digital design recap + number systems + logic optimization.",
+            "Verilog basics: modules, testbench, simulation flow.",
+            "Combinational + sequential circuits in Verilog.",
+            "Project: design a small digital system + simulate + report.",
+        ],
+        "projects": [
+            "4-bit ALU in Verilog",
+            "Traffic Light Controller (FSM) in Verilog",
+            "Simple Counter/Shift Register designs",
+        ],
+    },
+
+    "SIGNAL": {
+        "courses": [
+            "NPTEL — Signals and Systems / DSP intro",
+            "Python for Signal Processing (NumPy/Scipy) tutorials",
+            "YouTube: DSP basics (filters, FFT)",
+        ],
+        "weeks": [
+            "Signals basics + plotting + basic transforms concept.",
+            "FFT basics + noise removal concept.",
+            "Filters (low/high pass) concept + simple implementations.",
+            "Project: signal cleaning / analysis notebook + report.",
+        ],
+        "projects": [
+            "Noise filtering demo (FFT + filter)",
+            "Audio signal analysis notebook",
+            "Sensor signal smoothing + plots",
+        ],
+    },
+
+    "IOT": {
+        "courses": [
+            "Arduino/ESP32 IoT playlist (YouTube)",
+            "NPTEL — Introduction to IoT",
+            "Basics of MQTT/HTTP + simple dashboards",
+        ],
+        "weeks": [
+            "Microcontroller + sensor basics + read values.",
+            "Send data: serial/log file + basic visualization.",
+            "Add connectivity (Wi-Fi/MQTT/HTTP) basic.",
+            "Project: IoT dashboard demo + short video + README.",
+        ],
+        "projects": [
+            "Smart home sensor dashboard",
+            "Weather station mini project",
+            "Room monitoring (temp/light) demo",
+        ],
+    },
+
+    "EMBEDDED": {
+        "courses": [
+            "Embedded C basics (YouTube)",
+            "Arduino/ESP32 practical series",
+            "Basics of interrupts/timers (tutorial series)",
+        ],
+        "weeks": [
+            "Embedded C: loops, pointers basics, debugging mindset.",
+            "GPIO + sensor interfacing + basic timing.",
+            "Interrupts/timers basics + simple control logic.",
+            "Project: embedded mini demo + documentation.",
+        ],
+        "projects": [
+            "Digital stopwatch timer",
+            "Sensor-based alert system",
+            "LED patterns with interrupts/timers",
+        ],
+    },
+
+    # ---------- EEE ----------
+    "EEE": {
+        "courses": [
+            "NPTEL — Power Systems",
+            "NPTEL — Electrical Machines",
+            "Industrial Automation basics (YouTube/NPTEL)",
+        ],
+        "weeks": [
+            "Basics: power system components + machines recap.",
+            "Protection & control basics + simple problem practice.",
+            "Renewable/Smart grid basics (choose 1 focus).",
+            "Project: mini case-study/report with calculations + charts.",
+        ],
+        "projects": [
+            "Load analysis mini report (Excel/Python)",
+            "Renewable energy comparison case study",
+            "Basic fault analysis notes + examples",
+        ],
+    },
+
+    "POWER": {
+        "courses": [
+            "NPTEL — Power Systems (core)",
+            "Protection & Switchgear basics (YouTube/NPTEL)",
+            "Power flow intro (basic concepts)",
+        ],
+        "weeks": [
+            "Power system overview + per-unit basics (light).",
+            "Protection basics (relays, faults) + examples.",
+            "Transmission/distribution concepts + reliability.",
+            "Project: load/fault calculation sheet + report.",
+        ],
+        "projects": [
+            "Fault calculation worksheet + explanation",
+            "Load estimation report for hostel/house",
+            "Transmission line parameter mini notebook",
+        ],
+    },
+
+    "RENEW": {
+        "courses": [
+            "NPTEL — Renewable Energy",
+            "Solar PV basics (YouTube/NPTEL)",
+            "Wind energy basics (tutorial series)",
+        ],
+        "weeks": [
+            "Solar PV basics + components + sizing idea.",
+            "Wind/other renewables basics + pros/cons.",
+            "Hybrid systems + storage basics (battery).",
+            "Project: solar sizing calculator + mini report.",
+        ],
+        "projects": [
+            "Solar sizing calculator (Excel/Python)",
+            "Renewable comparison infographic/report",
+            "Microgrid case study summary",
+        ],
+    },
+
+    "SMARTGRID": {
+        "courses": [
+            "Smart Grid basics (NPTEL/YouTube)",
+            "Power electronics intro (for grid integration)",
+            "SCADA basics overview (intro)",
+        ],
+        "weeks": [
+            "Smart grid concept + components + communication basics.",
+            "Demand response + metering + grid monitoring concepts.",
+            "Grid integration of renewables + challenges.",
+            "Project: smart grid concept report + diagram + demo slides.",
+        ],
+        "projects": [
+            "Smart grid architecture diagram + report",
+            "Demand response mini case study",
+            "Energy monitoring dashboard concept",
+        ],
+    },
+
+    "AUTOMATION": {
+        "courses": [
+            "Industrial Automation basics (YouTube/NPTEL)",
+            "PLC fundamentals (intro course)",
+            "Sensors + actuators basics",
+        ],
+        "weeks": [
+            "Automation basics + sensors/actuators overview.",
+            "PLC fundamentals (ladder logic concept).",
+            "Control basics: feedback, stability concept.",
+            "Project: automation workflow diagram + mini case study.",
+        ],
+        "projects": [
+            "PLC ladder logic mini examples (documented)",
+            "Sensor-actuator workflow demo (simulation/report)",
+            "Industry process automation case study",
+        ],
+    },
+
+    "ELECTRICAL_DESIGN": {
+        "courses": [
+            "Electrical Design basics (YouTube/notes)",
+            "AutoCAD Electrical basics (optional)",
+            "Basics of wiring, safety, standards (overview)",
+        ],
+        "weeks": [
+            "Wiring basics + safety + common components.",
+            "Reading single-line diagrams (SLD) basics.",
+            "Load calculation + protection selection basics.",
+            "Project: Create an SLD + load sheet + report.",
+        ],
+        "projects": [
+            "Single-line diagram + explanation",
+            "Load calculation sheet for a building",
+            "Protection device selection notes",
+        ],
+    },
+
+    # ---------- Mechanical ----------
+    "MECH": {
+        "courses": [
+            "CAD basics (Fusion 360/SolidWorks tutorials)",
+            "NPTEL — Manufacturing / Thermal Engineering (choose 1)",
+            "Robotics basics (intro course/playlist)",
+        ],
+        "weeks": [
+            "CAD basics: sketches + 3 simple parts.",
+            "Manufacturing basics OR Thermal basics (choose one).",
+            "Robotics basics + mechanisms overview.",
+            "Project: design + report (CAD model + documentation).",
+        ],
+        "projects": [
+            "CAD assembly mini project",
+            "Manufacturing process comparison report",
+            "Thermal analysis mini notes + examples",
+        ],
+    },
+
+    "CAD": {
+        "courses": [
+            "Fusion 360 / SolidWorks beginner tutorials",
+            "Engineering drawing basics (YouTube)",
+            "Basic GD&T overview (optional)",
+        ],
+        "weeks": [
+            "Sketching + constraints + 3 practice parts.",
+            "3D modeling + assembly basics.",
+            "Drawings + dimensions + tolerances basics.",
+            "Project: model + drawing pack + short explanation.",
+        ],
+        "projects": [
+            "CAD model of simple machine part",
+            "Assembly of basic mechanism",
+            "Drawing sheet pack (PDF) + notes",
+        ],
+    },
+
+    "ROBOTICS": {
+        "courses": [
+            "Robotics basics playlist (YouTube)",
+            "Arduino basics (for small robotics demos)",
+            "Mechanisms + control intro (overview)",
+        ],
+        "weeks": [
+            "Basics: sensors + motors overview + simple control idea.",
+            "Arduino motor control basics + small demo.",
+            "Robot mechanisms + path planning intro (basic).",
+            "Project: mini robot demo plan + documentation/video.",
+        ],
+        "projects": [
+            "Line follower robot plan/demo",
+            "Obstacle avoidance mini demo",
+            "Robot arm concept + CAD (optional)",
+        ],
+    },
+
+    "AUTO": {
+        "courses": [
+            "Automobile basics (YouTube/NPTEL)",
+            "Engine + transmission basics overview",
+            "Vehicle dynamics intro (basic)",
+        ],
+        "weeks": [
+            "Vehicle components + engine basics.",
+            "Transmission + braking + steering basics.",
+            "Vehicle dynamics intro + safety concepts.",
+            "Project: vehicle subsystem report + diagrams.",
+        ],
+        "projects": [
+            "Vehicle subsystem case study (brakes/engine)",
+            "Maintenance checklist + explanation",
+            "Auto trends summary report",
+        ],
+    },
+
+    "THERMAL": {
+        "courses": [
+            "NPTEL — Thermal Engineering basics",
+            "Heat transfer intro playlist (YouTube)",
+            "Basic thermodynamics notes + problems",
+        ],
+        "weeks": [
+            "Thermo basics: laws + properties + simple problems.",
+            "Heat transfer basics (conduction/convection/radiation).",
+            "Cycles overview (Rankine/Brayton) basic.",
+            "Project: mini thermal calculation sheet + report.",
+        ],
+        "projects": [
+            "Heat loss calculation mini sheet",
+            "Thermal cycle summary report",
+            "Cooling system concept notes",
+        ],
+    },
+
+    "MANUFACTURING": {
+        "courses": [
+            "NPTEL — Manufacturing Processes",
+            "Metrology basics (YouTube/NPTEL)",
+            "Lean manufacturing overview (intro)",
+        ],
+        "weeks": [
+            "Manufacturing basics: casting/forming/machining overview.",
+            "Metrology basics + quality concepts.",
+            "Lean basics (5S, waste reduction).",
+            "Project: process comparison + case study report.",
+        ],
+        "projects": [
+            "Manufacturing process comparison report",
+            "Lean 5S checklist for workshop",
+            "Quality control mini notes + examples",
+        ],
+    },
+
+    # ---------- Soft Skills ----------
+    "SOFT": {
+        "courses": [
+            "Basic Communication Skills playlist (YouTube)",
+            "TED Talks (practice + notes)",
+            "Resume & Interview basics resources",
+        ],
+        "weeks": [
+            "Daily speaking practice + 5–7 lines writing summary.",
+            "Improve vocabulary + clarity + small presentations.",
+            "Mock interview practice + feedback from peers.",
+            "Project: 2-min self intro video + updated resume.",
+        ],
+        "projects": [
+            "2-min self-introduction video",
+            "Resume + LinkedIn update checklist",
+            "Weekly speaking practice log",
+        ],
+    },
+}
+
+# =========================
+# PERFECT DETECTION FOR YOUR CSV INTERESTS
+# =========================
+def detect_category(interest: str) -> str:
+    s = str(interest).lower()
+
+    # ML / Data
+    if any(k in s for k in ["ai/ml", "ml", "ai", "data science", "data analysis"]):
+        return "ML"
+
+    # Web + App
+    if "web" in s:
+        return "WEB"
+    if "app" in s:
+        return "WEB"
+
+    # DSA / Competitive
+    if "competitive coding" in s:
+        return "DSA"
+
+    # Cybersecurity
+    if "cyber" in s:
+        return "CYBER"
+
+    # ECE
+    if any(k in s for k in ["embedded", "vlsi", "iot"]):
+        # choose a more specific track if desired
+        if "vlsi" in s: return "VLSI"
+        if "iot" in s: return "IOT"
+        if "embedded" in s: return "EMBEDDED"
+        return "ECE"
+    if any(k in s for k in ["signal processing"]):
+        return "SIGNAL"
+    if any(k in s for k in ["communication systems"]):
+        return "COMM_SYSTEMS"
+
+    # EEE
+    if any(k in s for k in ["power systems"]):
+        return "POWER"
+    if any(k in s for k in ["renewable energy"]):
+        return "RENEW"
+    if any(k in s for k in ["smart grid systems"]):
+        return "SMARTGRID"
+    if any(k in s for k in ["industrial automation"]):
+        return "AUTOMATION"
+    if any(k in s for k in ["electrical design"]):
+        return "ELECTRICAL_DESIGN"
+
+    # Mechanical
+    if any(k in s for k in ["robotics"]):
+        return "ROBOTICS"
+    if any(k in s for k in ["cad design"]):
+        return "CAD"
+    if any(k in s for k in ["automobile engineering"]):
+        return "AUTO"
+    if any(k in s for k in ["thermal engineering"]):
+        return "THERMAL"
+    if any(k in s for k in ["manufacturing"]):
+        return "MANUFACTURING"
+
+    # Soft skills
+    if "communication skills" in s:
+        return "SOFT"
+
+    return "DSA"
+
+# =========================
+# WEEK PLAN BUILDER (returns week_plan, courses, projects)
+# =========================
 def build_week_plan(interest, skill_level, budget_level):
-    """A structured 4-week roadmap (generic but clean)."""
-    free_note = "Use free resources (YouTube/NPTEL/free Coursera audits)." if budget_level == "Low" else "Consider 1 paid course + mentorship for speed."
+    category = detect_category(interest)
+    data = COURSE_DB.get(category, COURSE_DB["DSA"])  # safe fallback
 
-    if skill_level == "Beginner":
-        project = "Mini project: build a basic end-to-end demo"
-        depth = "Focus on fundamentals + consistent practice"
-    else:
-        project = "Project: build a portfolio-grade real-world application"
-        depth = "Focus on advanced concepts + real datasets + deployment"
+    free_note = "Use free resources (YouTube/NPTEL/free audits)." if str(budget_level) == "Low" else "Consider 1 paid course for faster progress."
+    lvl = str(skill_level).lower()
+    practice = "45–60 mins daily practice." if "begin" in lvl else "60–90 mins daily practice."
 
-    return [
-        {
-            "title": "Week 1 — Foundation",
+    week_plan = []
+    for i in range(4):
+        week_plan.append({
+            "title": f"Week {i+1} — " + ["Foundation", "Core Skills", "Build Projects", "Portfolio & Review"][i],
             "bullets": [
-                f"{depth} in **{interest}** (core concepts).",
-                "Set up tools (GitHub, editor, notes).",
-                "Daily practice: 45–60 mins.",
+                f"Course focus: {data['courses'][min(i, len(data['courses'])-1)]}",
+                data["weeks"][i],
+                practice,
                 free_note,
-            ],
-        },
-        {
-            "title": "Week 2 — Skill Building",
-            "bullets": [
-                "Solve 10–15 practice problems / exercises.",
-                "Start a structured course + take notes.",
-                "Build 1 small component (feature/module) daily.",
-            ],
-        },
-        {
-            "title": "Week 3 — Projects & Proof",
-            "bullets": [
-                project,
-                "Add README + screenshots + clear steps.",
-                "Push code daily to GitHub (commit streak).",
-            ],
-        },
-        {
-            "title": "Week 4 — Career Readiness",
-            "bullets": [
-                "Resume: add project + skills + links.",
-                "Mock interview / presentations (2 sessions).",
-                "Polish project + deploy (if possible).",
-                "Plan next month based on gaps.",
-            ],
-        },
-    ]
+            ]
+        })
 
+    return week_plan, data["courses"], data["projects"]         
 def generate_structured_roadmap(info, df):
     """Return a rich roadmap object (not just flat strings)."""
     steps = []
@@ -268,56 +756,12 @@ def generate_structured_roadmap(info, df):
     if info["communication"] in ("Poor", "Low"):
         steps.append("Communication: 2 short talks/week + write 1 summary/day (5–7 lines).")
 
-    week_plan = build_week_plan(info["interest"], info["skill_level"], info["budget"])
-
-    # --- Resources by interest (simple mapping) ---
-    interest_lower = str(info["interest"]).lower()
-    if "data" in interest_lower or "ml" in interest_lower or "ai" in interest_lower:
-        resources = [
-            "NPTEL / YouTube: Python + ML basics",
-            "Kaggle: datasets + notebooks",
-            "GitHub: portfolio + README",
-            "LeetCode/HackerRank: fundamentals (optional)",
-        ]
-        projects = [
-            "Student performance prediction / analysis dashboard",
-            "Mini recommender system",
-            "Simple ML model + Streamlit deployment",
-        ]
-    elif "web" in interest_lower:
-        resources = [
-            "MDN Web Docs (HTML/CSS/JS)",
-            "Frontend practice: small clones",
-            "GitHub Pages / Vercel for deployment",
-        ]
-        projects = [
-            "Portfolio website",
-            "To-do app + local storage",
-            "Mini full-stack CRUD app",
-        ]
-    else:
-        resources = [
-            "YouTube + NPTEL fundamentals",
-            "One structured course (beginner → intermediate)",
-            "Build 2–3 projects + document well",
-        ]
-        projects = [
-            "1 mini project",
-            "1 intermediate project",
-            "1 portfolio-grade project",
-        ]
-
-    return {
-        "similar_note": sim_note,
-        "goals": goals,
-        "risks": risks,
-        "habits": habits,
-        "steps": steps,
-        "week_plan": week_plan,
-        "resources": resources,
-        "projects": projects,
-    }
-
+     week_plan, course_resources, course_projects = build_week_plan(
+        info["interest"], info["skill_level"], info["budget"]
+)
+# Use course database resources
+      resources = course_resources
+      projects = course_projects
 
 def roadmap_to_markdown(name, info, roadmap):
     def s(x):
