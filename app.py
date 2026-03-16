@@ -39,9 +39,6 @@ header{visibility:hidden;}
 
 
 /* ===== TEXT ===== */
-body,p,span,label,div{
-    color:#e5e7eb !important;
-}
 
 h1,h2,h3{
     letter-spacing:.3px;
@@ -137,6 +134,19 @@ input, textarea{
 [data-testid="stDataFrame"]{
     border-radius:12px;
     border:1px solid rgba(255,255,255,0.10);
+}
+/* Fix dropdown option visibility */
+div[data-baseweb="menu"] {
+    background-color: #ffffff !important;
+}
+
+div[data-baseweb="menu"] div {
+    color: #000000 !important;
+}
+
+div[data-baseweb="menu"] div:hover {
+    background-color: #f0f0f0 !important;
+    color: #000000 !important;
 }
 
 </style>
