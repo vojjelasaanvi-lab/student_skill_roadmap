@@ -14,72 +14,78 @@ from datetime import date
 # ---------------- Page config ----------------
 st.set_page_config(page_title="Student Skill Roadmap", layout="centered")
 # ---------------- UI THEME (HTML/CSS) ----------------
+
+
+
+
+
+
+
+
+
+/* ===== METRICS ===== */
+
 st.markdown("""
 <style>
 
-/* ===== APP BACKGROUND ===== */
+/* ===== GLOBAL APP STYLE ===== */
 .stApp{
-  .stApp{
-    background: linear-gradient(135deg,#1e3a8a,#0f172a,#020617);
-    color:#e2e8f0;
-}
+    background: linear-gradient(120deg,#0f172a,#020617,#020617,#1e3a8a);
     color:#e2e8f0;
     font-family: 'Inter', sans-serif;
 }
 
 /* ===== PAGE WIDTH ===== */
 .block-container{
-    max-width:1050px;
+    max-width:1100px;
     padding-top:2rem;
 }
 
-/* Hide Streamlit UI */
+/* ===== HIDE STREAMLIT MENU ===== */
 #MainMenu {visibility:hidden;}
 footer {visibility:hidden;}
 header {visibility:hidden;}
 
-
 /* ===== HEADINGS ===== */
-h1,h2,h3{
-    color:#f8fafc !important;
+h1{
+    font-weight:800;
+    letter-spacing:1px;
+}
+
+h2,h3{
     font-weight:700;
 }
 
-
-/* ===== LABELS ===== */
-label{
-    color:#cbd5f5 !important;
-    font-weight:600;
-}
-
-
-/* ===== CARDS ===== */
+/* ===== GLASS CARD ===== */
 .card{
-    background: rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.06);
     border:1px solid rgba(255,255,255,0.1);
-    border-radius:16px;
-    padding:20px;
-    margin-bottom:15px;
-    backdrop-filter: blur(8px);
+    border-radius:18px;
+    padding:22px;
+    backdrop-filter: blur(10px);
+    box-shadow:0 8px 30px rgba(0,0,0,0.3);
+    transition:0.3s;
 }
 
+.card:hover{
+    transform:translateY(-3px);
+}
 
 /* ===== INPUT FIELDS ===== */
 input, textarea{
-    background: rgba(255,255,255,0.07) !important;
+    background: rgba(255,255,255,0.08) !important;
     border:1px solid rgba(255,255,255,0.15) !important;
     color:white !important;
-    border-radius:10px !important;
+    border-radius:12px !important;
 }
 
-
-/* ===== SELECTBOX ===== */
+/* ===== SELECT BOX ===== */
 [data-baseweb="select"]{
-    background: rgba(255,255,255,0.07) !important;
-    border-radius:10px !important;
+    background: rgba(255,255,255,0.08) !important;
+    border-radius:12px !important;
 }
 
-/* Dropdown menu */
+/* Dropdown */
 div[data-baseweb="menu"]{
     background:white !important;
 }
@@ -88,52 +94,64 @@ div[data-baseweb="menu"] div{
     color:black !important;
 }
 
-div[data-baseweb="menu"] div:hover{
-    background:#f1f5f9 !important;
-}
-
-
 /* ===== BUTTON ===== */
-.stButton button{
+.stButton>button{
     width:100%;
-    border-radius:12px;
-    padding:10px;
+    border-radius:14px;
+    padding:12px;
     font-weight:700;
     border:none;
-    background:linear-gradient(135deg,#6366f1,#10b981);
+
+    background:linear-gradient(135deg,#6366f1,#22c55e);
     color:white;
+
+    transition:all 0.25s ease;
 }
 
-.stButton button:hover{
-    transform:translateY(-1px);
+.stButton>button:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 18px rgba(0,0,0,0.3);
     filter:brightness(1.1);
 }
 
-
 /* ===== METRICS ===== */
 [data-testid="stMetric"]{
-    background:rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.05);
     border:1px solid rgba(255,255,255,0.1);
-    border-radius:14px;
-    padding:14px;
+    border-radius:16px;
+    padding:18px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.2);
 }
-
 
 /* ===== TABS ===== */
 .stTabs [data-baseweb="tab"]{
-    background:rgba(255,255,255,0.05);
+    background:rgba(255,255,255,0.06);
     border-radius:10px;
+    padding:8px;
 }
 
 .stTabs [aria-selected="true"]{
-    background:rgba(255,255,255,0.15) !important;
+    background:rgba(255,255,255,0.18) !important;
 }
-
 
 /* ===== DATAFRAME ===== */
 [data-testid="stDataFrame"]{
-    border-radius:12px;
+    border-radius:14px;
     border:1px solid rgba(255,255,255,0.1);
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar{
+    width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#475569;
+    border-radius:10px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+    background:#64748b;
 }
 
 </style>
