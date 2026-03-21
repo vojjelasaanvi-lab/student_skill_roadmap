@@ -221,6 +221,24 @@ details[data-testid="stExpander"] span{
     color: #e5e7eb !important;
     padding: 12px 16px !important;
 }
+/* ===== NUCLEAR FIX FOR EXPANDER WHITE BAR ===== */
+
+/* target EVERYTHING inside expander */
+[data-testid="stExpander"] *{
+    background-color: transparent !important;
+}
+
+/* force header */
+[data-testid="stExpander"] > div:first-child{
+    background: rgba(255,255,255,0.08) !important;
+    color: white !important;
+}
+
+/* force content */
+[data-testid="stExpander"] > div:nth-child(2){
+    background: rgba(2,6,23,0.7) !important;
+    color: #e5e7eb !important;
+}
 
 </style>
 """, unsafe_allow_html=True)
