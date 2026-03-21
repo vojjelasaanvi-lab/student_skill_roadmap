@@ -17,115 +17,179 @@ st.set_page_config(page_title="Student Skill Roadmap", layout="centered")
 st.markdown("""
 <style>
 
-/* ===== MAIN BACKGROUND ===== */
+/* ===== APP BACKGROUND ===== */
 [data-testid="stAppViewContainer"]{
-    background: linear-gradient(135deg,#1e3a8a,#0f172a,#020617);
+    background:
+        linear-gradient(rgba(15,23,42,0.88), rgba(2,6,23,0.94)),
+        url("https://images.unsplash.com/photo-1555066931-4365d14bab8c");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: #f8fafc;
 }
 
-/* ===== TEXT COLOR ===== */
-/* ===== TEXT (ONLY MAIN BODY) ===== */
-[data-testid="stAppViewContainer"]{
-    color:#f8fafc;
+/* ===== MAIN CONTENT AREA ===== */
+.block-container{
+    max-width: 1050px;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
 }
 
-/* ===== FIX TABS (Week1 Week2 Week3) ===== */
-.stTabs [data-baseweb="tab"]{
-    background: rgba(255,255,255,0.08);
-    color:#e2e8f0 !important;
-    border-radius:10px;
-    padding:8px 16px;
+/* ===== GENERAL TEXT ===== */
+html, body, p, span, div, li, label{
+    color: #e5e7eb;
 }
 
-.stTabs [aria-selected="true"]{
-    background: linear-gradient(135deg,#6366f1,#22c55e) !important;
-    color:white !important;
+h1, h2, h3, h4, h5, h6{
+    color: #f8fafc !important;
+    font-weight: 700 !important;
 }
 
-/* ===== FIX EXPANDER (week content) ===== */
-.streamlit-expanderHeader{
-    color:#f8fafc !important;
-    font-weight:600;
+/* ===== CUSTOM CARD ===== */
+.card{
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
 }
 
-/* ===== FIX MARKDOWN TEXT ===== */
-.stMarkdown{
-    color:#e2e8f0 !important;
+.card-title{
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #f8fafc;
+    margin-bottom: 6px;
 }
 
-/* ===== LABELS ===== */
-label{
-    color:#cbd5f5 !important;
-    font-weight:600;
+.card-sub{
+    color: #cbd5e1;
+    margin: 0;
 }
 
-/* ===== INPUT BOX ===== */
-input{
+/* ===== INPUTS ===== */
+.stTextInput input,
+.stNumberInput input,
+.stTextArea textarea,
+div[data-baseweb="select"] > div,
+div[data-baseweb="base-input"]{
     background: rgba(255,255,255,0.08) !important;
-    color:white !important;
-    border-radius:10px !important;
+    color: #f8fafc !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    border-radius: 12px !important;
 }
 
-/* ===== SELECTBOX ===== */
-[data-baseweb="select"]{
-    background: rgba(255,255,255,0.08) !important;
-    border-radius:10px !important;
+/* ===== SELECT DROPDOWN ===== */
+div[data-baseweb="menu"]{
+    background: #ffffff !important;
+    border-radius: 10px !important;
+}
+
+div[data-baseweb="menu"] *{
+    color: #111827 !important;
 }
 
 /* ===== BUTTON ===== */
 .stButton > button{
-    background:linear-gradient(135deg,#6366f1,#22c55e);
-    color:white;
-    border-radius:12px;
-    padding:10px;
-    font-weight:700;
+    width: 100%;
+    border: none;
+    border-radius: 12px;
+    padding: 0.7rem 1rem;
+    font-weight: 700;
+    color: white !important;
+    background: linear-gradient(135deg,#6366f1,#22c55e) !important;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
 }
 
-/* ===== METRIC ===== */
+.stButton > button:hover{
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+}
+
+/* ===== METRICS ===== */
 [data-testid="stMetric"]{
-    background:rgba(255,255,255,0.05);
-    padding:14px;
-    border-radius:14px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 16px;
+    padding: 14px;
+}
+
+/* ===== TABS ===== */
+.stTabs [data-baseweb="tab-list"]{
+    gap: 10px;
+}
+
+.stTabs [data-baseweb="tab"]{
+    background: rgba(255,255,255,0.08);
+    color: #e2e8f0 !important;
+    border-radius: 14px 14px 0 0;
+    padding: 10px 18px;
+}
+
+.stTabs [aria-selected="true"]{
+    background: linear-gradient(135deg,#6366f1,#22c55e) !important;
+    color: white !important;
+}
+
+/* ===== EXPANDER: THIS IS THE IMPORTANT FIX ===== */
+details[data-testid="stExpander"]{
+    background: rgba(4,18,45,0.72) !important;
+    border: 1px solid rgba(255,255,255,0.10) !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    margin-bottom: 12px !important;
+    backdrop-filter: blur(10px);
+}
+
+/* expander header */
+details[data-testid="stExpander"] > summary{
+    background: rgba(255,255,255,0.06) !important;
+    color: #f8fafc !important;
+    padding: 16px 18px !important;
+    border-radius: 16px !important;
+    font-weight: 700 !important;
+    list-style: none !important;
+}
+
+/* hide default white marker spacing issues */
+details[data-testid="stExpander"] > summary::-webkit-details-marker{
+    display: none;
+}
+
+/* expander content area */
+details[data-testid="stExpander"] > div{
+    background: rgba(2,6,23,0.55) !important;
+    color: #e5e7eb !important;
+    padding: 14px 18px 16px 18px !important;
+    border-top: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+/* content text inside expander */
+details[data-testid="stExpander"] p,
+details[data-testid="stExpander"] li,
+details[data-testid="stExpander"] div,
+details[data-testid="stExpander"] span{
+    color: #e5e7eb !important;
+}
+
+/* ===== ALERT / INFO BOX ===== */
+[data-testid="stAlert"]{
+    background: rgba(59,130,246,0.12) !important;
+    border: 1px solid rgba(96,165,250,0.25) !important;
+    color: #eaf2ff !important;
+    border-radius: 14px !important;
 }
 
 /* ===== DATAFRAME ===== */
 [data-testid="stDataFrame"]{
-    border-radius:12px;
-}
-/* ===== FIX EXPANDER HEADER (WHITE BAR ISSUE) ===== */
-.streamlit-expanderHeader{
-    background: rgba(255,255,255,0.08) !important;
-    color: #f8fafc !important;
-    border-radius: 10px;
+    border-radius: 14px;
+    overflow: hidden;
 }
 
-/* Remove white background inside expander */
-.streamlit-expanderContent{
-    background: transparent !important;
-}
-
-/* Fix arrow icon color */
-.streamlit-expanderHeader svg{
-    color: #f8fafc !important;
-}
-
-</style>
-""", unsafe_allow_html=True)
-st.markdown("""
-<h1 style='text-align:center; font-size:40px'>
-🎓 Student Skill Roadmap Generator
-</h1>
-""", unsafe_allow_html=True)
-st.markdown("""
-<style>
-
-[data-testid="stAppViewContainer"]{
-    background-image: 
-    linear-gradient(rgba(15,23,42,0.9),rgba(2,6,23,0.95)),
-    url("https://images.unsplash.com/photo-1555066931-4365d14bab8c");
-
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
+/* ===== HIDE DEFAULT STREAMLIT CHROME ===== */
+#MainMenu, footer, header{
+    visibility: hidden;
 }
 
 </style>
