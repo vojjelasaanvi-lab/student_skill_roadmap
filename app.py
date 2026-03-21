@@ -91,6 +91,22 @@ input{
 [data-testid="stDataFrame"]{
     border-radius:12px;
 }
+/* ===== FIX EXPANDER HEADER (WHITE BAR ISSUE) ===== */
+.streamlit-expanderHeader{
+    background: rgba(255,255,255,0.08) !important;
+    color: #f8fafc !important;
+    border-radius: 10px;
+}
+
+/* Remove white background inside expander */
+.streamlit-expanderContent{
+    background: transparent !important;
+}
+
+/* Fix arrow icon color */
+.streamlit-expanderHeader svg{
+    color: #f8fafc !important;
+}
 
 </style>
 """, unsafe_allow_html=True)
