@@ -1196,58 +1196,58 @@ if st.button("🔍 Generate My Roadmap"):
         for r in roadmap["resources"]:
             st.write(f"📌 {r}")
     with tab5:
-    st.subheader("🧩 Skill Analysis")
-
-    job_choice = st.selectbox(
-        "Choose a Job Role",
-        ["Select a role"] + list(JOB_SKILL_ANALYSIS.keys())
-    )
-
-    if job_choice != "Select a role":
-        job_info = JOB_SKILL_ANALYSIS[job_choice]
-
-        st.subheader("🧠 Required Skills")
-        st.write(", ".join(job_info["skills"]))
-
-        st.subheader("🧪 Sample Projects")
-        for p in job_info["projects"]:
-            st.write(f"• {p}")
-
-        st.subheader("📚 Resources")
-        for r in job_info["resources"]:
-            st.write(f"• {r}")
-
-        st.subheader("🎓 Your Current Skills")
-        known_skills = st.multiselect(
-            "Select skills you know",
-            job_info["skills"]
+        st.subheader("🧩 Skill Analysis")
+        
+        job_choice = st.selectbox(
+            "Choose a Job Role",
+            ["Select a role"] + list(JOB_SKILL_ANALYSIS.keys())
         )
+        
+        if job_choice != "Select a role":
+            job_info = JOB_SKILL_ANALYSIS[job_choice]
+        
+            st.subheader("🧠 Required Skills")
+            st.write(", ".join(job_info["skills"]))
+        
+            st.subheader("🧪 Sample Projects")
+            for p in job_info["projects"]:
+                st.write(f"• {p}")
 
-        if known_skills:
-            known, missing = compute_skill_gap(job_info["skills"], known_skills)
+            st.subheader("📚 Resources")
+            for r in job_info["resources"]:
+                st.write(f"• {r}")
+    
+            st.subheader("🎓 Your Current Skills")
+            known_skills = st.multiselect(
+                "Select skills you know",
+                job_info["skills"]
+            )
+    
+            if known_skills:
+                known, missing = compute_skill_gap(job_info["skills"], known_skills)
+    
+                progress = int(len(known) / len(job_info["skills"]) * 100)
+    
+                st.subheader("📊 Skill Match")
+                st.progress(progress / 100)
+                st.caption(f"{progress}% match")
 
-            progress = int(len(known) / len(job_info["skills"]) * 100)
-
-            st.subheader("📊 Skill Match")
-            st.progress(progress / 100)
-            st.caption(f"{progress}% match")
-
-            col1, col2 = st.columns(2)
-
-            with col1:
-                st.markdown("### ✅ You Have")
-                for s in known:
-                    st.success(s)
-
-            with col2:
-                st.markdown("### 🔴 To Learn")
-                for s in missing:
-                    st.markdown(f"🔴 **{s}**")
-
-            if missing:
-                st.subheader("🛣️ Learning Order")
-                for i, s in enumerate(missing, 1):
-                    st.write(f"{i}. Learn **{s}**")
+                col1, col2 = st.columns(2)
+    
+                with col1:
+                    st.markdown("### ✅ You Have")
+                    for s in known:
+                        st.success(s)
+    
+                with col2:
+                    st.markdown("### 🔴 To Learn")
+                    for s in missing:
+                        st.markdown(f"🔴 **{s}**")
+    
+                if missing:
+                    st.subheader("🛣️ Learning Order")
+                    for i, s in enumerate(missing, 1):
+                        st.write(f"{i}. Learn **{s}**")
 
     # Download as markdown
     md = roadmap_to_markdown(name, student_info, roadmap)
