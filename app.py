@@ -1017,23 +1017,287 @@ def readiness_breakdown(info):
     # =========================
 # JOB SKILL ANALYSIS
 # =========================
+# =========================
+# JOB SKILL ANALYSIS
+# =========================
 JOB_SKILL_ANALYSIS = {
     "Software Developer": {
-        "skills": ["Python", "DSA", "HTML/CSS/JS", "Git", "SQL", "OOPS"],
-        "projects": ["Portfolio Website", "Task Manager App", "REST API"],
-        "resources": ["freeCodeCamp", "GeeksForGeeks", "NPTEL"]
+        "skills": [
+            "Python / Java",
+            "Data Structures & Algorithms",
+            "HTML, CSS, JavaScript",
+            "Git & GitHub",
+            "Databases (SQL)",
+            "OOPS",
+            "Problem Solving"
+        ],
+        "projects": [
+            "Student Management System",
+            "Task Tracker Application",
+            "Portfolio Website",
+            "REST API Mini Project"
+        ],
+        "resources": [
+            "NPTEL – Programming & DSA",
+            "YouTube – freeCodeCamp",
+            "GeeksForGeeks – DSA",
+            "GitHub – Open Source Projects"
+        ]
     },
     "Frontend Developer": {
-        "skills": ["HTML", "CSS", "JavaScript", "React", "Responsive Design"],
-        "projects": ["Portfolio", "React To-Do App", "UI Clone"],
-        "resources": ["MDN Docs", "YouTube", "React Docs"]
+        "skills": [
+            "HTML",
+            "CSS",
+            "JavaScript",
+            "React",
+            "Responsive Design",
+            "Git & GitHub"
+        ],
+        "projects": [
+            "Portfolio Website",
+            "React To-Do App",
+            "UI Clone (Netflix / Amazon)"
+        ],
+        "resources": [
+            "MDN Web Docs",
+            "Traversy Media (YouTube)",
+            "React Official Docs"
+        ]
+    },
+    "Backend Developer": {
+        "skills": [
+            "Node.js / Python / Java",
+            "Databases (SQL/NoSQL)",
+            "APIs / RESTful Services",
+            "Git & GitHub",
+            "Authentication & Security"
+        ],
+        "projects": [
+            "REST API Project",
+            "E-commerce Backend",
+            "Blog Platform Backend"
+        ],
+        "resources": [
+            "Udemy Backend Courses",
+            "YouTube - Tech With Tim / Traversy Media",
+            "MongoDB University"
+        ]
     },
     "Data Scientist": {
-        "skills": ["Python", "Pandas", "NumPy", "Statistics", "ML Basics"],
-        "projects": ["EDA Project", "Prediction Model"],
-        "resources": ["Kaggle", "Krish Naik", "Coursera"]
+        "skills": [
+            "Python",
+            "Statistics",
+            "Pandas & NumPy",
+            "Data Visualization",
+            "Machine Learning Basics"
+        ],
+        "projects": [
+            "Student Performance Analysis",
+            "Sales Prediction Model",
+            "EDA Project"
+        ],
+        "resources": [
+            "Kaggle Learn",
+            "Krish Naik (YouTube)",
+            "Coursera ML (Audit Mode)"
+        ]
+    },
+    "Machine Learning Engineer": {
+        "skills": [
+            "Python",
+            "Linear Algebra & Statistics",
+            "Scikit-learn / TensorFlow / PyTorch",
+            "Data Preprocessing",
+            "Model Deployment"
+        ],
+        "projects": [
+            "Predictive Analytics Model",
+            "Image Classification Project",
+            "Recommendation System"
+        ],
+        "resources": [
+            "Fast.ai Courses",
+            "DeepLearning.ai (Coursera)",
+            "YouTube - Sentdex / Krish Naik"
+        ]
+    },
+    "DevOps Engineer": {
+        "skills": [
+            "Linux / Shell Scripting",
+            "CI/CD (Jenkins/GitHub Actions)",
+            "Docker / Kubernetes",
+            "Cloud Platforms (AWS / GCP / Azure)",
+            "Monitoring & Logging"
+        ],
+        "projects": [
+            "CI/CD Pipeline Setup",
+            "Dockerized Application Deployment",
+            "Cloud Infrastructure Project"
+        ],
+        "resources": [
+            "Linux Academy / A Cloud Guru",
+            "YouTube - TechWorld with Nana",
+            "Official Docker & Kubernetes Docs"
+        ]
+    },
+    "UI/UX Designer": {
+        "skills": [
+            "Figma / Adobe XD",
+            "Wireframing & Prototyping",
+            "User Research & Testing",
+            "Responsive Design Principles",
+            "Portfolio Creation"
+        ],
+        "projects": [
+            "Mobile App Wireframes",
+            "Website Redesign Project",
+            "Interactive Prototype"
+        ],
+        "resources": [
+            "Figma Learn Tutorials",
+            "Coursera UI/UX Courses",
+            "YouTube - DesignCourse / CharliMarieTV"
+        ]
+    },
+    "Cybersecurity Analyst": {
+        "skills": [
+            "Networking Basics",
+            "Linux & Windows Security",
+            "Penetration Testing",
+            "Firewalls & IDS/IPS",
+            "Security Tools (Wireshark, Nmap)"
+        ],
+        "projects": [
+            "Vulnerability Assessment",
+            "Phishing Simulation",
+            "Secure Web Application Setup"
+        ],
+        "resources": [
+            "TryHackMe / Hack The Box",
+            "Cybrary Courses",
+            "YouTube - NetworkChuck / The Cyber Mentor"
+        ]
+    },
+    "Mobile App Developer": {
+        "skills": [
+            "Java / Kotlin / Swift / Flutter",
+            "UI/UX for Mobile",
+            "APIs & Backend Integration",
+            "App Deployment (Play Store / App Store)",
+            "Debugging & Testing"
+        ],
+        "projects": [
+            "Todo App",
+            "Weather Forecast App",
+            "E-commerce Mobile App"
+        ],
+        "resources": [
+            "Udemy Mobile App Courses",
+            "YouTube - CodeWithChris / The Net Ninja",
+            "Official Flutter Docs"
+        ]
+    },
+    "Cloud Engineer": {
+        "skills": [
+            "AWS / Azure / GCP",
+            "Cloud Architecture & Design",
+            "Networking & Security",
+            "CI/CD Pipelines",
+            "Infrastructure as Code (Terraform)"
+        ],
+        "projects": [
+            "Deploy Web App on Cloud",
+            "Serverless Application Project",
+            "Cloud Monitoring Setup"
+        ],
+        "resources": [
+            "AWS / Azure / GCP Official Docs",
+            "A Cloud Guru Courses",
+            "YouTube - TechWorld with Nana"
+        ]
+    },
+    "Business Analyst": {
+        "skills": [
+            "Excel / SQL / Tableau / PowerBI",
+            "Requirement Gathering",
+            "Process Modeling",
+            "Data Analysis & Reporting",
+            "Communication & Presentation"
+        ],
+        "projects": [
+            "Sales Dashboard",
+            "Customer Analysis Report",
+            "Process Optimization Project"
+        ],
+        "resources": [
+            "Coursera Business Analytics",
+            "Udemy SQL / Tableau Courses",
+            "YouTube - Analytics University"
+        ]
+    },
+    "Digital Marketing Specialist": {
+        "skills": [
+            "SEO / SEM",
+            "Google Analytics",
+            "Content Creation",
+            "Social Media Marketing",
+            "Email Marketing"
+        ],
+        "projects": [
+            "SEO Campaign Project",
+            "Social Media Ad Campaign",
+            "Email Marketing Automation"
+        ],
+        "resources": [
+            "Google Digital Garage",
+            "HubSpot Academy",
+            "YouTube - Neil Patel / Brian Dean"
+        ]
+    },
+    "Blockchain Developer": {
+        "skills": [
+            "Solidity / Ethereum",
+            "Smart Contracts",
+            "Web3.js / Ethers.js",
+            "Blockchain Architecture",
+            "Cryptography Basics"
+        ],
+        "projects": [
+            "Smart Contract Deployment",
+            "NFT Minting Platform",
+            "Decentralized App (DApp)"
+        ],
+        "resources": [
+            "CryptoZombies.io",
+            "Coursera Blockchain Courses",
+            "YouTube - Dapp University"
+        ]
+    },
+    "AI Researcher": {
+        "skills": [
+            "Python / R",
+            "Mathematics (Linear Algebra, Probability)",
+            "Deep Learning",
+            "NLP / Computer Vision",
+            "Research Paper Reading & Implementation"
+        ],
+        "projects": [
+            "Image Captioning Model",
+            "Text Summarization Model",
+            "Custom Neural Network Research"
+        ],
+        "resources": [
+            "arXiv Papers",
+            "DeepLearning.ai",
+            "YouTube - Yannic Kilcher / Two Minute Papers"
+        ]
     }
 }
+
+def compute_skill_gap(required_skills, known_skills):
+    known = [s for s in required_skills if s in known_skills]
+    missing = [s for s in required_skills if s not in known_skills]
+    return known, missing
 
 def compute_skill_gap(required_skills, known_skills):
     known = [s for s in required_skills if s in known_skills]
@@ -1257,8 +1521,78 @@ if st.button("🔍 Generate My Roadmap"):
         file_name=f"roadmap_{(name or 'student').replace(' ','_').lower()}.md",
         mime="text/markdown",
     )
-    st.markdown('</div>', unsafe_allow_html=True)
+    # ---------------- Skill Analysis Section (Standalone) ----------------
     st.divider()
+    st.markdown("""
+    <div class="card">
+      <div class="card-title">🧩 Skill Gap Analysis</div>
+      <p class="card-sub">Choose a role, mark the skills you already know, and see what to learn next.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    
+    job_choice = st.selectbox(
+        "Choose a Job Role",
+        ["Select a role"] + list(JOB_SKILL_ANALYSIS.keys()),
+        key="skill_analysis_role"
+    )
+    
+    if job_choice != "Select a role":
+        job_info = JOB_SKILL_ANALYSIS[job_choice]
+    
+        st.subheader("🧠 Required Skills")
+        for s in job_info["skills"]:
+            st.write(f"• {s}")
+    
+        st.subheader("🧪 Sample Projects")
+        for p in job_info["projects"]:
+            st.write(f"• {p}")
+    
+        st.subheader("📚 Recommended Resources")
+        for r in job_info["resources"]:
+            st.write(f"• {r}")
+    
+        st.subheader("🎓 Your Current Skills")
+        known_skills = st.multiselect(
+            "Select skills you already know",
+            job_info["skills"],
+            key="skill_analysis_known"
+        )
+    
+        known, missing = compute_skill_gap(job_info["skills"], known_skills)
+    
+        progress = int((len(known) / len(job_info["skills"])) * 100) if job_info["skills"] else 0
+    
+        st.subheader("📊 Skill Match")
+        st.progress(progress / 100)
+        st.caption(f"Skill Match: {progress}%")
+    
+        col1, col2 = st.columns(2)
+    
+        with col1:
+            st.markdown("### ✅ Skills You Have")
+            if known:
+                for s in known:
+                    st.success(s)
+            else:
+                st.info("No skills selected yet.")
+    
+        with col2:
+            st.markdown("### ❌ Skills You Need to Learn")
+            if missing:
+                for s in missing:
+                    st.error(s)
+            else:
+                st.success("Great! You selected all required skills.")
+    
+        if missing:
+            st.subheader("🛣️ Recommended Learning Order")
+            for i, s in enumerate(missing, 1):
+                st.write(f"{i}. Learn **{s}**")
+    
+        st.markdown('</div>', unsafe_allow_html=True)
+        st.divider()
 
 # ---------------- Dataset preview ----------------
 with st.expander("📊 Sample Student Dataset (Preview)", expanded=False):
