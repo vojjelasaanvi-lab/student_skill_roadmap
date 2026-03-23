@@ -15,6 +15,20 @@ from datetime import date
 st.set_page_config(page_title="Student Skill Roadmap", layout="centered")
 # ---------------- UI THEME (HTML/CSS) ----------------
 st.markdown("""
+<div style="
+    background-image: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644');
+    background-size: cover;
+    background-position: center;
+    padding: 60px;
+    border-radius: 15px;
+    text-align: center;
+    color: white;
+">
+    <h1>🎯 Student Skill Roadmap</h1>
+    <p>Plan your learning journey smartly</p>
+</div>
+""", unsafe_allow_html=True)
+st.markdown("""
 <style>
 
 /* ===== CONTAINER ===== */
