@@ -64,6 +64,21 @@ st.markdown("""
 
 </style>
 """, unsafe_allow_html=True)
+st.markdown("""
+<style>
+
+/* ===== PREMIUM DARK GRADIENT ===== */
+.stApp {
+    background: linear-gradient(135deg, #020617, #0f172a, #1e293b);
+}
+
+/* Optional: smoother feel */
+.block-container {
+    background: transparent;
+}
+
+</style>
+""", unsafe_allow_html=True)
 
 # ---------------- Load dataset ----------------
 @st.cache_data
