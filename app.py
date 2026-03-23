@@ -730,26 +730,6 @@ def generate_structured_roadmap(info, df):
       "resources": resources,
       "projects": projects,
   }
-roadmap = generate_structured_roadmap(student_info, data)
-
-# ✅ ADD HERE (UI DISPLAY)
-st.subheader("🗺️ Your Roadmap")
-
-for w in roadmap.get("week_plan", []):
-    st.markdown(f"""
-    <div class="card">
-        <h3>📅 {w.get('title','')}</h3>
-        <ul>
-            {''.join([f"<li>{b}</li>" for b in w.get("bullets", [])])}
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
-
-
-# ✅ THEN KEEP YOUR EXISTING CODE
-# text_output = generate_text_output(roadmap)
-
-st.download_button("📥 Download Roadmap", text_output)
 def roadmap_to_markdown(name, info, roadmap):
     def s(x):
         # Convert anything (including numpy types) to clean string
