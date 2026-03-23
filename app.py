@@ -14,7 +14,90 @@ from datetime import date
 # ---------------- Page config ----------------
 st.set_page_config(page_title="Student Skill Roadmap", layout="centered")
 # ---------------- UI THEME (HTML/CSS) ----------------
+st.markdown("""
+<style>
 
+/* ===== MAIN APP ===== */
+.stApp {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: #e2e8f0;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ===== CONTAINER ===== */
+.block-container {
+    max-width: 1100px;
+    padding-top: 2rem;
+}
+
+/* ===== HEADINGS ===== */
+h1, h2, h3, h4 {
+    color: #f8fafc;
+}
+
+/* ===== CARD STYLE ===== */
+.card {
+    background: rgba(30, 41, 59, 0.8);
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+/* ===== BUTTONS ===== */
+.stButton > button {
+    background: linear-gradient(135deg, #3b82f6, #6366f1);
+    color: white;
+    border-radius: 10px;
+    padding: 10px 18px;
+    border: none;
+    transition: 0.3s;
+}
+
+.stButton > button:hover {
+    background: linear-gradient(135deg, #2563eb, #4f46e5);
+    transform: scale(1.05);
+}
+
+/* ===== SELECT BOX ===== */
+.stSelectbox div[data-baseweb="select"] {
+    background-color: #1e293b !important;
+    color: white !important;
+    border-radius: 10px;
+}
+
+/* ===== INPUT BOX ===== */
+.stTextInput input, .stNumberInput input {
+    background-color: #1e293b !important;
+    color: white !important;
+    border-radius: 8px;
+}
+
+/* ===== METRICS ===== */
+[data-testid="stMetric"] {
+    background: rgba(51, 65, 85, 0.7);
+    padding: 15px;
+    border-radius: 12px;
+}
+
+/* ===== REMOVE WHITE BACKGROUND ISSUES ===== */
+section[data-testid="stSidebar"] {
+    background-color: #020617 !important;
+}
+
+div[data-testid="stExpander"] {
+    background-color: transparent !important;
+}
+
+/* ===== DOWNLOAD BUTTON FIX ===== */
+.stDownloadButton > button {
+    background: #10b981;
+    color: white;
+    border-radius: 10px;
+}
+
+</style>
+""", unsafe_allow_html=True)
 # st.markdown("""
 #  <style>
  
