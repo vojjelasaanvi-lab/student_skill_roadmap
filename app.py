@@ -15,8 +15,8 @@ from datetime import date
 # ---------------- Page config ----------------
 st.set_page_config(page_title="Student Skill Roadmap", layout="centered")
 # ---------------- UI THEME (HTML/CSS) ----------------
-if "page" not in st.session_state:
-    st.session_state.page = "home"
+# if "page" not in st.session_state:
+#     st.session_state.page = "home"
 st.markdown("""
 <style>
 
@@ -82,44 +82,44 @@ st.markdown("""
 
 </style>
 """, unsafe_allow_html=True)
-if st.session_state.page == "home":
+# if st.session_state.page == "home":
 
-    quotes = [
-        "Success doesn’t come from what you do occasionally.",
-        "Push yourself, because no one else will do it for you.",
-        "Dream big. Start small. Act now.",
-        "Your future is created by what you do today."
-    ]
+#     quotes = [
+#         "Success doesn’t come from what you do occasionally.",
+#         "Push yourself, because no one else will do it for you.",
+#         "Dream big. Start small. Act now.",
+#         "Your future is created by what you do today."
+#     ]
 
-    quote = random.choice(quotes)
+#     quote = random.choice(quotes)
 
-    st.markdown(f"""
-    <div style="
-        background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
-        url('https://images.unsplash.com/photo-1513258496099-48168024aec0');
-        background-size: cover;
-        background-position: center;
-        padding: 80px;
-        border-radius: 15px;
-        text-align: center;
-        color: white;
-    ">
-        <h1>🎯 Student Skill Roadmap</h1>
-        <p style="font-size:18px;">{quote}</p>
-    </div>
-    """, unsafe_allow_html=True)
+#     st.markdown(f"""
+#     <div style="
+#         background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+#         url('https://images.unsplash.com/photo-1513258496099-48168024aec0');
+#         background-size: cover;
+#         background-position: center;
+    #     padding: 80px;
+    #     border-radius: 15px;
+    #     text-align: center;
+    #     color: white;
+    # ">
+    #     <h1>🎯 Student Skill Roadmap</h1>
+    #     <p style="font-size:18px;">{quote}</p>
+    # </div>
+    # """, unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    # st.markdown("<br>", unsafe_allow_html=True)
 
-    if st.button("🚀 Start Your Roadmap"):
-        st.session_state.page = "app"
+    # if st.button("🚀 Start Your Roadmap"):
+    #     st.session_state.page = "app"
 
 # ---------------- Load dataset ----------------
-elif st.session_state.page == "app":
+# elif st.session_state.page == "app":
 
-    # 🔙 optional back button
-    if st.button("⬅ Back"):
-        st.session_state.page = "home"
+#     # 🔙 optional back button
+#     if st.button("⬅ Back"):
+#         st.session_state.page = "home"
 
     st.title("🧠 Build Your Roadmap")
     @st.cache_data
