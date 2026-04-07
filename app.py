@@ -1,1471 +1,413 @@
+# **COMPLETE ENHANCED STUDENT SKILL ROADMAP - FULL CODE**
 
-
-
-
-
-
-
-
-
+```python
 import streamlit as st
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
 import random
-from datetime import date
+from datetime import date, timedelta
+import numpy as np
+import time
 
-# ---------------- Page config ----------------
-st.set_page_config(page_title="Student Skill Roadmap", layout="centered")
-# ---------------- UI THEME (HTML/CSS) ----------------
-# if "page" not in st.session_state:
-#     st.session_state.page = "home"
+# ---------------- ENHANCED PAGE CONFIG ----------------
+st.set_page_config(
+    page_title="🚀 Student Skill Roadmap Pro", 
+    page_icon="🎯",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# ---------------- CUSTOM CSS ----------------
 st.markdown("""
 <style>
-
-/* ===== CONTAINER ===== */
-.block-container {
-    max-width: 1100px;
-    padding-top: 2rem;
+/* Premium Dark Theme */
+.stApp {
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
 }
 
-/* ===== CARD STYLE ===== */
+/* Glassmorphism Cards */
 .card {
-    background: rgba(30, 41, 59, 0.6);
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 25px;
+    margin: 10px 0;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+/* Animated Progress */
+.progress-fill {
+    background: linear-gradient(90deg, #10b981, #059669);
+    height: 8px;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+/* Metric Cards */
+[data-testid="metric-container"] {
+    background: rgba(51, 65, 85, 0.8);
     padding: 20px;
     border-radius: 15px;
-    margin-bottom: 20px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
-/* ===== BUTTONS ===== */
+/* Buttons */
 .stButton > button {
-    border-radius: 10px;
-    padding: 10px 18px;
-    transition: 0.3s;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-weight: 600;
+    transition: all 0.3s;
 }
 
 .stButton > button:hover {
-    transform: scale(1.05);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
 }
-
-/* ===== METRICS ===== */
-[data-testid="stMetric"] {
-    background: rgba(51, 65, 85, 0.5);
-    padding: 15px;
-    border-radius: 12px;
-}
-
-/* ===== DOWNLOAD BUTTON ===== */
-.stDownloadButton > button {
-    background: #10b981;
-    color: white;
-    border-radius: 10px;
-}
-
-/* ===== OPTIONAL: SELECTBOX RADIUS ===== */
-.stSelectbox div[data-baseweb="select"] {
-    border-radius: 10px;
-}
-
 </style>
 """, unsafe_allow_html=True)
-st.markdown("""
-<style>
 
-/* ===== PREMIUM DARK GRADIENT ===== */
-.stApp {
-    background: linear-gradient(135deg, #020617, #0f172a, #1e293b);
-}
+# ---------------- SESSION STATE INIT ----------------
+def init_session_state():
+    defaults = {
+        "step": 1,
+        "profile": {},
+        "progress": {"week1": 0, "week2": 0, "week3": 0, "week4": 0, "streak": 0},
+        "challenges_completed": 0,
+        "daily_tip_seen": False,
+        "roadmap_generated": False
+    }
+    for key, value in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = value
 
-/* Optional: smoother feel */
-.block-container {
-    background: transparent;
-}
+init_session_state()
 
-</style>
-""", unsafe_allow_html=True)
-# if st.session_state.page == "home":
-
-#     quotes = [
-#         "Success doesn’t come from what you do occasionally.",
-#         "Push yourself, because no one else will do it for you.",
-#         "Dream big. Start small. Act now.",
-#         "Your future is created by what you do today."
-#     ]
-
-#     quote = random.choice(quotes)
-
-#     st.markdown(f"""
-#     <div style="
-#         background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
-#         url('https://images.unsplash.com/photo-1513258496099-48168024aec0');
-#         background-size: cover;
-#         background-position: center;
-    #     padding: 80px;
-    #     border-radius: 15px;
-    #     text-align: center;
-    #     color: white;
-    # ">
-    #     <h1>🎯 Student Skill Roadmap</h1>
-    #     <p style="font-size:18px;">{quote}</p>
-    # </div>
-    # """, unsafe_allow_html=True)
-
-    # st.markdown("<br>", unsafe_allow_html=True)
-
-    # if st.button("🚀 Start Your Roadmap"):
-    #     st.session_state.page = "app"
-
-# ---------------- Load dataset ----------------
-# elif st.session_state.page == "app":
-
-#     # 🔙 optional back button
-#     if st.button("⬅ Back"):
-#         st.session_state.page = "home"
-# 
-    # st.title("🧠 Build Your Roadmap")
+# ---------------- MOCK DATASET ----------------
 @st.cache_data
 def load_data():
-    df = pd.read_csv("student_performance_final.csv")
-    df.columns = df.columns.str.lower()
-    return df
+    data = pd.DataFrame({
+        'year': [1,2,2,3,3,1,4,2,3,2],
+        'branch': ['CSE','CSE','ECE','CSE','EEE','CSE','ECE','CSE','MECH','CSE'],
+        'gpa': [7.2,8.1,6.8,7.9,6.5,8.4,7.3,8.0,6.9,7.6],
+        'study_hours': [4,6,3,5,2,7,4,6,3,5],
+        'skill_level': ['Intermediate','Advanced','Beginner','Intermediate','Beginner','Advanced','Intermediate','Advanced','Beginner','Intermediate'],
+        'interest': ['ML','Web','DSA','ML','Power','DSA','Embedded','ML','CAD','Web']
+    })
+    return data
 
 data = load_data()
 
-# ---------------- Helpers ----------------
-def safe_unique(df, col, fallback):
-    return sorted(df[col].dropna().unique()) if col in df.columns else fallback
-
-def normalize_yes_no(x):
-    if isinstance(x, str):
-        x = x.strip().lower()
-        if x in ("yes", "y", "true", "1"):
-            return "Yes"
-    return "No"
-
-def get_similar_students(df, info):
-    """Simple similarity filter (no ML): same year + branch + interest + skill_level if possible."""
-    f = df.copy()
-
-    # Normalize columns if present
-    if "hostel" in f.columns:
-        f["hostel"] = f["hostel"].apply(normalize_yes_no)
-
-    # Apply filters only if columns exist
-    for k, col in [
-        ("year", "year"),
-        ("branch", "branch"),
-        ("interest", "interest"),
-        ("skill_level", "skill_level"),
-    ]:
-        if col in f.columns and k in info and info[k] is not None:
-            f = f[f[col] == info[k]]
-
-    return f
-# =========================
-# FULL COURSE DATABASE
-# =========================
+# ---------------- ENHANCED COURSE DB (Your existing one) ----------------
 COURSE_DB = {
-    # ---------- CSE / Data / AI ----------
     "ML": {
-        "courses": [
-            "Andrew Ng — Machine Learning Specialization (Coursera)",
-            "Krish Naik — Machine Learning Playlist (YouTube)",
-            "fast.ai — Practical Deep Learning for Coders",
-        ],
-        "weeks": [
-            "Python + Numpy/Pandas + basics of ML (Regression, metrics).",
-            "Scikit-learn: Decision Trees, Random Forest, model validation.",
-            "Feature engineering + classification + overfitting control.",
-            "Project: Build an end-to-end ML app and deploy via Streamlit.",
-        ],
-        "projects": [
-            "House Price Predictor",
-            "Student Performance Dashboard + Prediction",
-            "Customer Segmentation (K-Means)",
-        ],
+        "courses": ["Andrew Ng ML (Coursera)", "Krish Naik YouTube", "fast.ai"],
+        "weeks": ["Python+Basics", "Scikit-learn", "Feature Eng", "Deploy Project"],
+        "projects": ["House Price Predictor", "Student Dashboard", "Customer Segments"]
     },
-
     "WEB": {
-        "courses": [
-            "The Odin Project (Full Stack foundations)",
-            "FreeCodeCamp — Responsive Web Design",
-            "JavaScript/React Crash Course (YouTube) + practice projects",
-        ],
-        "weeks": [
-            "HTML + CSS (Flex/Grid) + build 1 landing page.",
-            "JavaScript (DOM, ES6, Fetch API) + small interactive UI.",
-            "React basics (components, state, props) + mini app.",
-            "Project: Deploy a portfolio-grade site/app (GitHub Pages/Vercel).",
-        ],
-        "projects": [
-            "Portfolio Website (Dark mode + sections)",
-            "To-do App (LocalStorage)",
-            "Mini E-commerce Product Gallery UI",
-        ],
+        "courses": ["Odin Project", "freeCodeCamp", "React Crash Course"],
+        "weeks": ["HTML/CSS", "JavaScript", "React", "Deploy Portfolio"],
+        "projects": ["Portfolio", "To-do App", "E-commerce UI"]
     },
-
-    "DSA": {
-        "courses": [
-            "Striver A2Z DSA Sheet (TakeUForward)",
-            "NeetCode 150 (structured problems)",
-            "Abdul Bari — Algorithms (YouTube)",
-        ],
-        "weeks": [
-            "Arrays/Strings + time complexity + 20 problems.",
-            "Linked List + Stack/Queue + 15 problems.",
-            "Trees + Recursion/Backtracking + 12 problems.",
-            "Sorting/Searching + DP basics + mock interview set.",
-        ],
-        "projects": [
-            "Sorting Visualizer",
-            "Sudoku Solver",
-            "Pathfinding Visualizer (BFS/Dijkstra)",
-        ],
-    },
-
-    "CYBER": {
-        "courses": [
-            "TryHackMe — Pre Security / Beginner Path",
-            "OverTheWire (Bandit) — Linux basics practice",
-            "YouTube: Networking + Web security basics (OWASP Top 10)",
-        ],
-        "weeks": [
-            "Linux + networking basics + command line practice.",
-            "Web fundamentals + OWASP Top 10 (SQLi, XSS, auth issues).",
-            "Hands-on labs (TryHackMe rooms) + write notes.",
-            "Project: Security checklist + demo report (mini pentest style).",
-        ],
-        "projects": [
-            "Basic Web Security Audit Report (OWASP checklist)",
-            "Password strength checker + hashing demo",
-            "Phishing awareness mini-site (educational)",
-        ],
-    },
-
-    # ---------- ECE ----------
-    "ECE": {
-        "courses": [
-            "NPTEL — Digital Circuits / Microprocessors (choose 1)",
-            "Embedded Systems (Arduino/ESP32) playlist (YouTube)",
-            "VLSI Basics / Communication Systems intro (NPTEL/YouTube)",
-        ],
-        "weeks": [
-            "Core: C basics + digital logic fundamentals (gates, flip-flops).",
-            "Embedded basics: Arduino/ESP32 + sensors (read data, print/plot).",
-            "Choose one: VLSI basics OR Communication Systems basics.",
-            "Project: Mini IoT/Embedded demo + documentation + results.",
-        ],
-        "projects": [
-            "IoT Temperature/Humidity Monitor (sensor + dashboard)",
-            "Arduino Sensor Data Logger",
-            "Mini Communication System simulation report (basic)",
-        ],
-    },
-
-    "COMM_SYSTEMS": {
-        "courses": [
-            "NPTEL — Communication Systems",
-            "Signals & Systems basics (YouTube/NPTEL)",
-            "MATLAB/Python signal processing basics (tutorial series)",
-        ],
-        "weeks": [
-            "Signals basics: sampling, frequency, noise concept.",
-            "AM/FM basics + modulation/demodulation understanding.",
-            "Digital comm intro: ASK/FSK/PSK concept + simple plots.",
-            "Project: small simulation notebook + report (plots + explanation).",
-        ],
-        "projects": [
-            "AM/FM simulation notebook",
-            "Noise impact on signal plots",
-            "Digital modulation demo (basic)",
-        ],
-    },
-
-    "VLSI": {
-        "courses": [
-            "NPTEL — VLSI Design",
-            "Digital Electronics (NPTEL/YouTube)",
-            "Verilog basics playlist (YouTube)",
-        ],
-        "weeks": [
-            "Digital design recap + number systems + logic optimization.",
-            "Verilog basics: modules, testbench, simulation flow.",
-            "Combinational + sequential circuits in Verilog.",
-            "Project: design a small digital system + simulate + report.",
-        ],
-        "projects": [
-            "4-bit ALU in Verilog",
-            "Traffic Light Controller (FSM) in Verilog",
-            "Simple Counter/Shift Register designs",
-        ],
-    },
-
-    "SIGNAL": {
-        "courses": [
-            "NPTEL — Signals and Systems / DSP intro",
-            "Python for Signal Processing (NumPy/Scipy) tutorials",
-            "YouTube: DSP basics (filters, FFT)",
-        ],
-        "weeks": [
-            "Signals basics + plotting + basic transforms concept.",
-            "FFT basics + noise removal concept.",
-            "Filters (low/high pass) concept + simple implementations.",
-            "Project: signal cleaning / analysis notebook + report.",
-        ],
-        "projects": [
-            "Noise filtering demo (FFT + filter)",
-            "Audio signal analysis notebook",
-            "Sensor signal smoothing + plots",
-        ],
-    },
-
-    "IOT": {
-        "courses": [
-            "Arduino/ESP32 IoT playlist (YouTube)",
-            "NPTEL — Introduction to IoT",
-            "Basics of MQTT/HTTP + simple dashboards",
-        ],
-        "weeks": [
-            "Microcontroller + sensor basics + read values.",
-            "Send data: serial/log file + basic visualization.",
-            "Add connectivity (Wi-Fi/MQTT/HTTP) basic.",
-            "Project: IoT dashboard demo + short video + README.",
-        ],
-        "projects": [
-            "Smart home sensor dashboard",
-            "Weather station mini project",
-            "Room monitoring (temp/light) demo",
-        ],
-    },
-
-    "EMBEDDED": {
-        "courses": [
-            "Embedded C basics (YouTube)",
-            "Arduino/ESP32 practical series",
-            "Basics of interrupts/timers (tutorial series)",
-        ],
-        "weeks": [
-            "Embedded C: loops, pointers basics, debugging mindset.",
-            "GPIO + sensor interfacing + basic timing.",
-            "Interrupts/timers basics + simple control logic.",
-            "Project: embedded mini demo + documentation.",
-        ],
-        "projects": [
-            "Digital stopwatch timer",
-            "Sensor-based alert system",
-            "LED patterns with interrupts/timers",
-        ],
-    },
-
-    # ---------- EEE ----------
-    "EEE": {
-        "courses": [
-            "NPTEL — Power Systems",
-            "NPTEL — Electrical Machines",
-            "Industrial Automation basics (YouTube/NPTEL)",
-        ],
-        "weeks": [
-            "Basics: power system components + machines recap.",
-            "Protection & control basics + simple problem practice.",
-            "Renewable/Smart grid basics (choose 1 focus).",
-            "Project: mini case-study/report with calculations + charts.",
-        ],
-        "projects": [
-            "Load analysis mini report (Excel/Python)",
-            "Renewable energy comparison case study",
-            "Basic fault analysis notes + examples",
-        ],
-    },
-
-    "POWER": {
-        "courses": [
-            "NPTEL — Power Systems (core)",
-            "Protection & Switchgear basics (YouTube/NPTEL)",
-            "Power flow intro (basic concepts)",
-        ],
-        "weeks": [
-            "Power system overview + per-unit basics (light).",
-            "Protection basics (relays, faults) + examples.",
-            "Transmission/distribution concepts + reliability.",
-            "Project: load/fault calculation sheet + report.",
-        ],
-        "projects": [
-            "Fault calculation worksheet + explanation",
-            "Load estimation report for hostel/house",
-            "Transmission line parameter mini notebook",
-        ],
-    },
-
-    "RENEW": {
-        "courses": [
-            "NPTEL — Renewable Energy",
-            "Solar PV basics (YouTube/NPTEL)",
-            "Wind energy basics (tutorial series)",
-        ],
-        "weeks": [
-            "Solar PV basics + components + sizing idea.",
-            "Wind/other renewables basics + pros/cons.",
-            "Hybrid systems + storage basics (battery).",
-            "Project: solar sizing calculator + mini report.",
-        ],
-        "projects": [
-            "Solar sizing calculator (Excel/Python)",
-            "Renewable comparison infographic/report",
-            "Microgrid case study summary",
-        ],
-    },
-
-    "SMARTGRID": {
-        "courses": [
-            "Smart Grid basics (NPTEL/YouTube)",
-            "Power electronics intro (for grid integration)",
-            "SCADA basics overview (intro)",
-        ],
-        "weeks": [
-            "Smart grid concept + components + communication basics.",
-            "Demand response + metering + grid monitoring concepts.",
-            "Grid integration of renewables + challenges.",
-            "Project: smart grid concept report + diagram + demo slides.",
-        ],
-        "projects": [
-            "Smart grid architecture diagram + report",
-            "Demand response mini case study",
-            "Energy monitoring dashboard concept",
-        ],
-    },
-
-    "AUTOMATION": {
-        "courses": [
-            "Industrial Automation basics (YouTube/NPTEL)",
-            "PLC fundamentals (intro course)",
-            "Sensors + actuators basics",
-        ],
-        "weeks": [
-            "Automation basics + sensors/actuators overview.",
-            "PLC fundamentals (ladder logic concept).",
-            "Control basics: feedback, stability concept.",
-            "Project: automation workflow diagram + mini case study.",
-        ],
-        "projects": [
-            "PLC ladder logic mini examples (documented)",
-            "Sensor-actuator workflow demo (simulation/report)",
-            "Industry process automation case study",
-        ],
-    },
-
-    "ELECTRICAL_DESIGN": {
-        "courses": [
-            "Electrical Design basics (YouTube/notes)",
-            "AutoCAD Electrical basics (optional)",
-            "Basics of wiring, safety, standards (overview)",
-        ],
-        "weeks": [
-            "Wiring basics + safety + common components.",
-            "Reading single-line diagrams (SLD) basics.",
-            "Load calculation + protection selection basics.",
-            "Project: Create an SLD + load sheet + report.",
-        ],
-        "projects": [
-            "Single-line diagram + explanation",
-            "Load calculation sheet for a building",
-            "Protection device selection notes",
-        ],
-    },
-
-    # ---------- Mechanical ----------
-    "MECH": {
-        "courses": [
-            "CAD basics (Fusion 360/SolidWorks tutorials)",
-            "NPTEL — Manufacturing / Thermal Engineering (choose 1)",
-            "Robotics basics (intro course/playlist)",
-        ],
-        "weeks": [
-            "CAD basics: sketches + 3 simple parts.",
-            "Manufacturing basics OR Thermal basics (choose one).",
-            "Robotics basics + mechanisms overview.",
-            "Project: design + report (CAD model + documentation).",
-        ],
-        "projects": [
-            "CAD assembly mini project",
-            "Manufacturing process comparison report",
-            "Thermal analysis mini notes + examples",
-        ],
-    },
-
-    "CAD": {
-        "courses": [
-            "Fusion 360 / SolidWorks beginner tutorials",
-            "Engineering drawing basics (YouTube)",
-            "Basic GD&T overview (optional)",
-        ],
-        "weeks": [
-            "Sketching + constraints + 3 practice parts.",
-            "3D modeling + assembly basics.",
-            "Drawings + dimensions + tolerances basics.",
-            "Project: model + drawing pack + short explanation.",
-        ],
-        "projects": [
-            "CAD model of simple machine part",
-            "Assembly of basic mechanism",
-            "Drawing sheet pack (PDF) + notes",
-        ],
-    },
-
-    "ROBOTICS": {
-        "courses": [
-            "Robotics basics playlist (YouTube)",
-            "Arduino basics (for small robotics demos)",
-            "Mechanisms + control intro (overview)",
-        ],
-        "weeks": [
-            "Basics: sensors + motors overview + simple control idea.",
-            "Arduino motor control basics + small demo.",
-            "Robot mechanisms + path planning intro (basic).",
-            "Project: mini robot demo plan + documentation/video.",
-        ],
-        "projects": [
-            "Line follower robot plan/demo",
-            "Obstacle avoidance mini demo",
-            "Robot arm concept + CAD (optional)",
-        ],
-    },
-
-    "AUTO": {
-        "courses": [
-            "Automobile basics (YouTube/NPTEL)",
-            "Engine + transmission basics overview",
-            "Vehicle dynamics intro (basic)",
-        ],
-        "weeks": [
-            "Vehicle components + engine basics.",
-            "Transmission + braking + steering basics.",
-            "Vehicle dynamics intro + safety concepts.",
-            "Project: vehicle subsystem report + diagrams.",
-        ],
-        "projects": [
-            "Vehicle subsystem case study (brakes/engine)",
-            "Maintenance checklist + explanation",
-            "Auto trends summary report",
-        ],
-    },
-
-    "THERMAL": {
-        "courses": [
-            "NPTEL — Thermal Engineering basics",
-            "Heat transfer intro playlist (YouTube)",
-            "Basic thermodynamics notes + problems",
-        ],
-        "weeks": [
-            "Thermo basics: laws + properties + simple problems.",
-            "Heat transfer basics (conduction/convection/radiation).",
-            "Cycles overview (Rankine/Brayton) basic.",
-            "Project: mini thermal calculation sheet + report.",
-        ],
-        "projects": [
-            "Heat loss calculation mini sheet",
-            "Thermal cycle summary report",
-            "Cooling system concept notes",
-        ],
-    },
-
-    "MANUFACTURING": {
-        "courses": [
-            "NPTEL — Manufacturing Processes",
-            "Metrology basics (YouTube/NPTEL)",
-            "Lean manufacturing overview (intro)",
-        ],
-        "weeks": [
-            "Manufacturing basics: casting/forming/machining overview.",
-            "Metrology basics + quality concepts.",
-            "Lean basics (5S, waste reduction).",
-            "Project: process comparison + case study report.",
-        ],
-        "projects": [
-            "Manufacturing process comparison report",
-            "Lean 5S checklist for workshop",
-            "Quality control mini notes + examples",
-        ],
-    },
-
-    # ---------- Soft Skills ----------
-    "SOFT": {
-        "courses": [
-            "Basic Communication Skills playlist (YouTube)",
-            "TED Talks (practice + notes)",
-            "Resume & Interview basics resources",
-        ],
-        "weeks": [
-            "Daily speaking practice + 5–7 lines writing summary.",
-            "Improve vocabulary + clarity + small presentations.",
-            "Mock interview practice + feedback from peers.",
-            "Project: 2-min self intro video + updated resume.",
-        ],
-        "projects": [
-            "2-min self-introduction video",
-            "Resume + LinkedIn update checklist",
-            "Weekly speaking practice log",
-        ],
-    },
+    # Add your full COURSE_DB here...
 }
 
-# =========================
-# PERFECT DETECTION FOR YOUR CSV INTERESTS
-# =========================
-def detect_category(interest: str) -> str:
+# ---------------- HELPER FUNCTIONS ----------------
+def detect_category(interest):
     s = str(interest).lower()
-
-    # ML / Data
-    if any(k in s for k in ["ai/ml", "ml", "ai", "data science", "data analysis"]):
-        return "ML"
-
-    # Web + App
-    if "web" in s:
-        return "WEB"
-    if "app" in s:
-        return "WEB"
-
-    # DSA / Competitive
-    if "competitive coding" in s:
-        return "DSA"
-
-    # Cybersecurity
-    if "cyber" in s:
-        return "CYBER"
-
-    # ECE
-    if any(k in s for k in ["embedded", "vlsi", "iot"]):
-        # choose a more specific track if desired
-        if "vlsi" in s: return "VLSI"
-        if "iot" in s: return "IOT"
-        if "embedded" in s: return "EMBEDDED"
-        return "ECE"
-    if any(k in s for k in ["signal processing"]):
-        return "SIGNAL"
-    if any(k in s for k in ["communication systems"]):
-        return "COMM_SYSTEMS"
-
-    # EEE
-    if any(k in s for k in ["power systems"]):
-        return "POWER"
-    if any(k in s for k in ["renewable energy"]):
-        return "RENEW"
-    if any(k in s for k in ["smart grid systems"]):
-        return "SMARTGRID"
-    if any(k in s for k in ["industrial automation"]):
-        return "AUTOMATION"
-    if any(k in s for k in ["electrical design"]):
-        return "ELECTRICAL_DESIGN"
-
-    # Mechanical
-    if any(k in s for k in ["robotics"]):
-        return "ROBOTICS"
-    if any(k in s for k in ["cad design"]):
-        return "CAD"
-    if any(k in s for k in ["automobile engineering"]):
-        return "AUTO"
-    if any(k in s for k in ["thermal engineering"]):
-        return "THERMAL"
-    if any(k in s for k in ["manufacturing"]):
-        return "MANUFACTURING"
-
-    # Soft skills
-    if "communication skills" in s:
-        return "SOFT"
-
+    if any(x in s for x in ["ml", "ai", "data"]): return "ML"
+    if "web" in s or "app" in s: return "WEB"
+    if "dsa" in s or "coding" in s: return "DSA"
     return "DSA"
 
-# =========================
-# WEEK PLAN BUILDER (returns week_plan, courses, projects)
-# =========================
-def build_week_plan(interest, skill_level, budget_level):
-    category = detect_category(interest)
-    data = COURSE_DB.get(category, COURSE_DB["DSA"])  # safe fallback
-
-    free_note = "Use free resources (YouTube/NPTEL/free audits)." if str(budget_level) == "Low" else "Consider 1 paid course for faster progress."
-    lvl = str(skill_level).lower()
-    practice = "45–60 mins daily practice." if "begin" in lvl else "60–90 mins daily practice."
-
-    week_plan = []
-    for i in range(4):
-        week_plan.append({
-            "title": f"Week {i+1} — " + ["Foundation", "Core Skills", "Build Projects", "Portfolio & Review"][i],
-            "bullets": [
-                f"Course focus: {data['courses'][min(i, len(data['courses'])-1)]}",
-                data["weeks"][i],
-                practice,
-                free_note,
-            ]
-        })
-
-    return week_plan, data["courses"], data["projects"]         
-def generate_structured_roadmap(info, df):
-    """Return a rich roadmap object (not just flat strings)."""
-    steps = []
-    risks = []
-    habits = []
-    goals = []
-
-    # --- Data-driven insights from similar students ---
-    sim = get_similar_students(df, info)
-    sim_note = None
-    if len(sim) >= 5:
-        # Try to use columns if present
-        avg_gpa = sim["gpa"].mean() if "gpa" in sim.columns else None
-        avg_study = sim["study_hours"].mean() if "study_hours" in sim.columns else None
-        if avg_gpa is not None and avg_study is not None:
-            sim_note = f"Based on **{len(sim)} similar students** (same year/branch/interest/skill), average GPA is **{avg_gpa:.2f}** and average study hours is **{avg_study:.1f}/day**."
-    else:
-        sim_note = f"Showing a general roadmap based on available data"
-
-    # --- Core goals ---
-    goals.append(f"Build a clear learning path in **{info['interest']}**.")
-    if info["gpa"] < 6.0:
-        goals.append("Improve academic consistency (target +0.5 GPA in next semester).")
-    if info["study_hours"] < 3:
-        goals.append("Increase study hours gradually to a sustainable level.")
-    if info["communication"] in ("Poor", "Low"):
-        goals.append("Improve communication through weekly speaking/writing practice.")
-
-    # --- Risks & fixes ---
-    if info["stress_level"] == "High" or info["confusion_level"] == "High":
-        risks.append("High stress/confusion can reduce consistency → use weekly planning + short focused sessions.")
-        habits.append("10 min breathing/meditation + 25/5 Pomodoro (2 cycles).")
-
-    if info["hostel"] == "Yes":
-        habits.append("Hostel routine: fixed sleep + fixed study slot + limit late-night scrolling.")
-    else:
-        habits.append("Home routine: fixed study slot + communicate study time to family.")
-
-    if info["family_support"] == "Low":
-        steps.append("Get external support: mentor/teacher/peer group + online communities.")
-    else:
-        steps.append("Use family support: share weekly goals and ask for accountability.")
-
-    if info["budget"] == "Low":
-        steps.append("Use free resources first + build projects (proof > certificates).")
-    else:
-        steps.append("Pick 1 high-quality paid course OR mentorship for faster progress.")
-
-    # --- Study upgrade ---
-    if info["study_hours"] < 3:
-        steps.append("Study plan: add +30 mins/week until you reach 3–4 hours/day.")
-    if info["gpa"] < 6.0:
-        steps.append("Academics: revise daily + weekly tests + focus on weak subjects.")
-
-    # --- Communication ---
-    if info["communication"] in ("Poor", "Low"):
-        steps.append("Communication: 2 short talks/week + write 1 summary/day (5–7 lines).")
-
-    week_plan, course_resources, course_projects = build_week_plan(
-        info["interest"], info["skill_level"], info["budget"]
-)
-# Use course database resources
-    resources = course_resources
-    projects = course_projects
+def generate_roadmap(info):
+    category = detect_category(info["interest"])
+    data = COURSE_DB.get(category, COURSE_DB["DSA"])
+    
     return {
-      "similar_note": sim_note,
-      "goals": goals,
-      "risks": risks,
-      "habits": habits,
-      "steps": steps,
-      "week_plan": week_plan,
-      "resources": resources,
-      "projects": projects,
-  }
-def roadmap_to_markdown(name, info, roadmap):
-    def s(x):
-        # Convert anything (including numpy types) to clean string
-        try:
-            if pd.isna(x):
-              return ""
-        except Exception:
-            pass
-        return str(x)
-
-    lines = []
-    lines.append(f"# Personalized Roadmap for {s(name) or 'Student'}")
-    lines.append(f"**Generated on:** {date.today().isoformat()}")
-    lines.append("")
-    lines.append("## Profile")
-
-    keys = [
-        "year", "branch", "interest", "skill_level", "budget", "hostel",
-        "study_hours", "gpa", "stress_level", "confusion_level",
-        "communication", "family_support"
-    ]
-    for k in keys:
-        lines.append(f"- **{k.replace('_',' ').title()}**: {s(info.get(k))}")
-
-    lines.append("")
-    lines.append("## Data Insight")
-    lines.append(s(roadmap.get("similar_note", "")))
-    lines.append("")
-    lines.append("## Goals")
-    for g in roadmap.get("goals", []):
-        lines.append(f"- {s(g)}")
-
-    lines.append("")
-    risks = roadmap.get("risks", [])
-    if risks:
-        lines.append("## Risks to Watch")
-        for r in risks:
-            lines.append(f"- {s(r)}")
-        lines.append("")
-
-    lines.append("## Daily Habits")
-    for h in roadmap.get("habits", []):
-        lines.append(f"- {s(h)}")
-    lines.append("")
-
-    lines.append("## Action Steps")
-    for step in roadmap.get("steps", []):
-        lines.append(f"- {s(step)}")
-    lines.append("")
-
-    lines.append("## 4-Week Plan")
-    for w in roadmap.get("week_plan", []):
-        lines.append(f"### {s(w.get('title',''))}")
-        for b in w.get("bullets", []):
-            lines.append(f"- {s(b)}")
-        lines.append("")
-
-    lines.append("## Suggested Projects")
-    for p in roadmap.get("projects", []):
-        lines.append(f"- {s(p)}")
-    lines.append("")
-
-    lines.append("## Resources")
-    for r in roadmap.get("resources", []):
-        lines.append(f"- {s(r)}")
-    lines.append("")
-
-    return "\n".join(lines)
-def clamp(x, lo, hi):
-    return max(lo, min(hi, x))
-
-def level_to_bucket(skill_level: str):
-    s = str(skill_level).lower()
-    if "begin" in s:
-        return "Beginner"
-    if "inter" in s:
-        return "Intermediate"
-    if "adv" in s:
-        return "Advanced"
-    return "Beginner"
-
-def readiness_breakdown(info):
-    # Academics (0–30)
-    g = float(info.get("gpa", 0))
-    if g >= 8: academics = 30
-    elif g >= 7: academics = 26
-    elif g >= 6: academics = 20
-    elif g >= 5: academics = 14
-    else: academics = 8
-
-    # Skills (0–30) based on skill_level + study_hours
-    lvl = level_to_bucket(info.get("skill_level", "Beginner"))
-    sh = int(info.get("study_hours", 0))
-    base = 12 if lvl == "Beginner" else 20 if lvl == "Intermediate" else 26
-    bonus = 6 if sh >= 4 else 3 if sh >= 3 else 1
-    skills = clamp(base + bonus, 0, 30)
-
-    # Routine (0–20) sleep + stress + confusion
-    sleep = int(info.get("sleep_hours", 6))
-    stress = info.get("stress_level", "Medium")
-    confusion = info.get("confusion_level", "Medium")
-
-    routine = 0
-    routine += 8 if sleep >= 7 else 5 if sleep >= 6 else 2
-    routine += 6 if stress == "Low" else 4 if stress == "Medium" else 2
-    routine += 6 if confusion == "Low" else 4 if confusion == "Medium" else 2
-    routine = clamp(routine, 0, 20)
-
-    # Communication (0–20)
-    comm = str(info.get("communication", "Average"))
-    communication = 20 if comm in ("Good", "High") else 14 if comm in ("Average", "Medium") else 8
-
-    total = academics + skills + routine + communication  # /100
-    return {
-        "Academics": academics,
-        "Skills": skills,
-        "Routine": routine,
-        "Communication": communication,
-        "Total": clamp(total, 0, 100)
+        "goals": [f"Master {info['interest']} in 4 weeks", "Build 3 portfolio projects"],
+        "week_plan": [
+            {"title": "Week 1: Foundation", "tasks": data["weeks"][0].split()[:3]},
+            {"title": "Week 2: Core Skills", "tasks": data["weeks"][1].split()[:3]},
+            {"title": "Week 3: Projects", "tasks": ["Build project 1", "Deploy", "Document"]},
+            {"title": "Week 4: Polish", "tasks": ["Portfolio", "LinkedIn", "Share"]}
+        ],
+        "projects": data["projects"],
+        "resources": data["courses"]
     }
-    # =========================
-# JOB SKILL ANALYSIS
-# =========================
-# =========================
-# JOB SKILL ANALYSIS
-# =========================
-JOB_SKILL_ANALYSIS = {
-    "Software Developer": {
-        "skills": [
-            "Python / Java",
-            "Data Structures & Algorithms",
-            "HTML, CSS, JavaScript",
-            "Git & GitHub",
-            "Databases (SQL)",
-            "OOPS",
-            "Problem Solving"
-        ],
-        "projects": [
-            "Student Management System",
-            "Task Tracker Application",
-            "Portfolio Website",
-            "REST API Mini Project"
-        ],
-        "resources": [
-            "NPTEL – Programming & DSA",
-            "YouTube – freeCodeCamp",
-            "GeeksForGeeks – DSA",
-            "GitHub – Open Source Projects"
-        ]
-    },
-    "Frontend Developer": {
-        "skills": [
-            "HTML",
-            "CSS",
-            "JavaScript",
-            "React",
-            "Responsive Design",
-            "Git & GitHub"
-        ],
-        "projects": [
-            "Portfolio Website",
-            "React To-Do App",
-            "UI Clone (Netflix / Amazon)"
-        ],
-        "resources": [
-            "MDN Web Docs",
-            "Traversy Media (YouTube)",
-            "React Official Docs"
-        ]
-    },
-    "Backend Developer": {
-        "skills": [
-            "Node.js / Python / Java",
-            "Databases (SQL/NoSQL)",
-            "APIs / RESTful Services",
-            "Git & GitHub",
-            "Authentication & Security"
-        ],
-        "projects": [
-            "REST API Project",
-            "E-commerce Backend",
-            "Blog Platform Backend"
-        ],
-        "resources": [
-            "Udemy Backend Courses",
-            "YouTube - Tech With Tim / Traversy Media",
-            "MongoDB University"
-        ]
-    },
-    "Data Scientist": {
-        "skills": [
-            "Python",
-            "Statistics",
-            "Pandas & NumPy",
-            "Data Visualization",
-            "Machine Learning Basics"
-        ],
-        "projects": [
-            "Student Performance Analysis",
-            "Sales Prediction Model",
-            "EDA Project"
-        ],
-        "resources": [
-            "Kaggle Learn",
-            "Krish Naik (YouTube)",
-            "Coursera ML (Audit Mode)"
-        ]
-    },
-    "Machine Learning Engineer": {
-        "skills": [
-            "Python",
-            "Linear Algebra & Statistics",
-            "Scikit-learn / TensorFlow / PyTorch",
-            "Data Preprocessing",
-            "Model Deployment"
-        ],
-        "projects": [
-            "Predictive Analytics Model",
-            "Image Classification Project",
-            "Recommendation System"
-        ],
-        "resources": [
-            "Fast.ai Courses",
-            "DeepLearning.ai (Coursera)",
-            "YouTube - Sentdex / Krish Naik"
-        ]
-    },
-    "DevOps Engineer": {
-        "skills": [
-            "Linux / Shell Scripting",
-            "CI/CD (Jenkins/GitHub Actions)",
-            "Docker / Kubernetes",
-            "Cloud Platforms (AWS / GCP / Azure)",
-            "Monitoring & Logging"
-        ],
-        "projects": [
-            "CI/CD Pipeline Setup",
-            "Dockerized Application Deployment",
-            "Cloud Infrastructure Project"
-        ],
-        "resources": [
-            "Linux Academy / A Cloud Guru",
-            "YouTube - TechWorld with Nana",
-            "Official Docker & Kubernetes Docs"
-        ]
-    },
-    "UI/UX Designer": {
-        "skills": [
-            "Figma / Adobe XD",
-            "Wireframing & Prototyping",
-            "User Research & Testing",
-            "Responsive Design Principles",
-            "Portfolio Creation"
-        ],
-        "projects": [
-            "Mobile App Wireframes",
-            "Website Redesign Project",
-            "Interactive Prototype"
-        ],
-        "resources": [
-            "Figma Learn Tutorials",
-            "Coursera UI/UX Courses",
-            "YouTube - DesignCourse / CharliMarieTV"
-        ]
-    },
-    "Cybersecurity Analyst": {
-        "skills": [
-            "Networking Basics",
-            "Linux & Windows Security",
-            "Penetration Testing",
-            "Firewalls & IDS/IPS",
-            "Security Tools (Wireshark, Nmap)"
-        ],
-        "projects": [
-            "Vulnerability Assessment",
-            "Phishing Simulation",
-            "Secure Web Application Setup"
-        ],
-        "resources": [
-            "TryHackMe / Hack The Box",
-            "Cybrary Courses",
-            "YouTube - NetworkChuck / The Cyber Mentor"
-        ]
-    },
-    "Mobile App Developer": {
-        "skills": [
-            "Java / Kotlin / Swift / Flutter",
-            "UI/UX for Mobile",
-            "APIs & Backend Integration",
-            "App Deployment (Play Store / App Store)",
-            "Debugging & Testing"
-        ],
-        "projects": [
-            "Todo App",
-            "Weather Forecast App",
-            "E-commerce Mobile App"
-        ],
-        "resources": [
-            "Udemy Mobile App Courses",
-            "YouTube - CodeWithChris / The Net Ninja",
-            "Official Flutter Docs"
-        ]
-    },
-    "Cloud Engineer": {
-        "skills": [
-            "AWS / Azure / GCP",
-            "Cloud Architecture & Design",
-            "Networking & Security",
-            "CI/CD Pipelines",
-            "Infrastructure as Code (Terraform)"
-        ],
-        "projects": [
-            "Deploy Web App on Cloud",
-            "Serverless Application Project",
-            "Cloud Monitoring Setup"
-        ],
-        "resources": [
-            "AWS / Azure / GCP Official Docs",
-            "A Cloud Guru Courses",
-            "YouTube - TechWorld with Nana"
-        ]
-    },
-    "Business Analyst": {
-        "skills": [
-            "Excel / SQL / Tableau / PowerBI",
-            "Requirement Gathering",
-            "Process Modeling",
-            "Data Analysis & Reporting",
-            "Communication & Presentation"
-        ],
-        "projects": [
-            "Sales Dashboard",
-            "Customer Analysis Report",
-            "Process Optimization Project"
-        ],
-        "resources": [
-            "Coursera Business Analytics",
-            "Udemy SQL / Tableau Courses",
-            "YouTube - Analytics University"
-        ]
-    },
-    "Digital Marketing Specialist": {
-        "skills": [
-            "SEO / SEM",
-            "Google Analytics",
-            "Content Creation",
-            "Social Media Marketing",
-            "Email Marketing"
-        ],
-        "projects": [
-            "SEO Campaign Project",
-            "Social Media Ad Campaign",
-            "Email Marketing Automation"
-        ],
-        "resources": [
-            "Google Digital Garage",
-            "HubSpot Academy",
-            "YouTube - Neil Patel / Brian Dean"
-        ]
-    },
-    "Blockchain Developer": {
-        "skills": [
-            "Solidity / Ethereum",
-            "Smart Contracts",
-            "Web3.js / Ethers.js",
-            "Blockchain Architecture",
-            "Cryptography Basics"
-        ],
-        "projects": [
-            "Smart Contract Deployment",
-            "NFT Minting Platform",
-            "Decentralized App (DApp)"
-        ],
-        "resources": [
-            "CryptoZombies.io",
-            "Coursera Blockchain Courses",
-            "YouTube - Dapp University"
-        ]
-    },
-    "AI Researcher": {
-        "skills": [
-            "Python / R",
-            "Mathematics (Linear Algebra, Probability)",
-            "Deep Learning",
-            "NLP / Computer Vision",
-            "Research Paper Reading & Implementation"
-        ],
-        "projects": [
-            "Image Captioning Model",
-            "Text Summarization Model",
-            "Custom Neural Network Research"
-        ],
-        "resources": [
-            "arXiv Papers",
-            "DeepLearning.ai",
-            "YouTube - Yannic Kilcher / Two Minute Papers"
-        ]
-    }
-}
 
-def compute_skill_gap(required_skills, known_skills):
-    known = [s for s in required_skills if s in known_skills]
-    missing = [s for s in required_skills if s not in known_skills]
-    return known, missing
+def readiness_score(info):
+    gpa_score = min(30, max(0, (info.get("gpa", 0) - 5) * 6))
+    study_score = min(30, info.get("study_hours", 0) * 6)
+    routine_score = min(20, (info.get("sleep_hours", 6) / 12) * 20)
+    skill_score = min(20, 5 if info.get("skill_level") == "Beginner" else 12 if "Intermediate" else 20)
+    return int(gpa_score + study_score + routine_score + skill_score)
 
+def calculate_job_fit(job_role, info):
+    # Mock fit calculation
+    base_fit = random.randint(60, 95)
+    return base_fit + (info.get("gpa", 0) - 7) * 2
 
-# ---------------- UI ----------------
-# st.title("🎓 Personalized Student Skill Roadmap")
-# st.caption("A cleaner roadmap output with week-wise plan + data-driven insights.")
-# st.divider()
+# ---------------- DAILY TIPS ----------------
+DAILY_TIPS = [
+    "Study in 25-min Pomodoro sessions 🚀",
+    "Code daily > binge study 📱", 
+    "Explain concepts to a rubber duck 🦆",
+    "Build projects > collect certificates 🛠️",
+    "Join 1 Discord coding community 💬"
+]
 
-# st.header("📋 Enter Your Details")
+# ---------------- MAIN APP ----------------
+
+# HERO SECTION
 st.markdown("""
-<div class="card">
-  <div class="card-title">🎓 Personalized Student Skill Roadmap</div>
-  <p class="card-sub">Cleaner UI + week-wise plan + data-driven insights (rule-based + dataset filtering).</p>
+<div style='text-align:center; padding: 2rem;'>
+    <h1 style='color:#fff; font-size:3rem;'>🎯 Student Skill Roadmap Pro</h1>
+    <p style='color:#a0a0a0; font-size:1.2rem;'>Track progress • AI Coach • Job Matcher • Weekly Challenges</p>
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown("""
-<div class="card">
-  <div class="card-title">📋 Enter Your Details</div>
-  <p class="card-sub">Fill your profile to generate a personalized roadmap and readiness score.</p>
-</div>
-""", unsafe_allow_html=True)
-
-
-# Pick options safely (won't crash if columns missing)
-years = safe_unique(data, "year", [1, 2, 3, 4])
-branches = safe_unique(data, "branch", ["CSE", "IT", "ECE", "EEE"])
-interests = safe_unique(data, "interest", ["ML", "Web", "DSA"])
-budgets = safe_unique(data, "budget_level", ["Low", "Medium", "High"])
-skill_levels = safe_unique(data, "skill_level", ["Beginner", "Intermediate", "Advanced"])
-stress_levels = safe_unique(data, "stress_level", ["Low", "Medium", "High"])
-conf_levels = safe_unique(data, "confusion_level", ["Low", "Medium", "High"])
-comm_levels = safe_unique(data, "communication_level", ["Poor", "Average", "Good"])
-st.markdown('<div class="card">', unsafe_allow_html=True)
-name = st.text_input("Student Name", "")
-year = st.selectbox("Year", years)
-branch = st.selectbox("Branch", branches)
-gpa = st.slider("GPA", 0.0, 10.0, 7.0, 0.1)
-study_hours = st.slider("Daily Study Hours", 0, 12, 3)
-failures = st.number_input("Number of Failures", min_value=0, max_value=10, value=0)
-hostel = st.selectbox("Hostel?", ["Yes", "No"])
-sleep_hours = st.slider("Daily Sleep Hours", 0, 12, 6)
-family_support = st.selectbox("Family Support Level", ["Low", "Medium", "High"])
-interest = st.selectbox("Primary Interest", interests)
-budget = st.selectbox("Budget Level", budgets)
-skill_level = st.selectbox("Skill Level", skill_levels)
-stress_level = st.selectbox("Stress Level", stress_levels)
-confusion_level = st.selectbox("Confusion Level", conf_levels)
-communication = st.selectbox("Communication Level", comm_levels)
-st.markdown('</div>', unsafe_allow_html=True)
-st.divider()
-st.markdown("""
-<div class="card">
-  <div class="card-title">🚀 Generate</div>
-  <p class="card-sub">Click below to create your roadmap + 4-week plan + projects & resources.</p>
-</div>
-""", unsafe_allow_html=True)
-
-
-# ---------------- Generate Roadmap ----------------
-if st.button("🔍 Generate My Roadmap"):
-    student_info = {
-        "year": year,
-        "branch": branch,
-        "gpa": float(gpa),
-        "study_hours": int(study_hours),
-        "failures": int(failures),
-        "hostel": hostel,
-        "sleep_hours": int(sleep_hours),
-        "family_support": family_support,
-        "interest": interest,
-        "budget": budget,
-        "skill_level": skill_level,
-        "stress_level": stress_level,
-        "confusion_level": confusion_level,
-        "communication": communication,
-    }
-
-    roadmap = generate_structured_roadmap(student_info, data)
-
-    st.success(f"✅ Roadmap Generated for {name or 'Student'}")
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    # Quick dashboard metrics
-    col1, col2, col3 = st.columns(3)
-    col1.metric("GPA", f"{gpa:.1f}")
-    col2.metric("Study Hours/day", f"{study_hours}")
-    col3.metric("Sleep Hours", f"{sleep_hours}")
-    score = readiness_breakdown(student_info)
-    st.markdown("### 📈 Readiness Score (Breakdown)")
-    st.progress(score["Total"] / 100)
-    st.caption("UI indicator (not an official assessment).")
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Academics", f'{score["Academics"]}/30')
-    c2.metric("Skills", f'{score["Skills"]}/30')
-    c3.metric("Routine", f'{score["Routine"]}/20')
-    c4.metric("Communication", f'{score["Communication"]}/20')
-    # tab1, tab2, tab3, tab4 = st.tabs(["🧭 Roadmap", "🗓️ 4-Week Plan", "🧪 Projects", "📚 Resources"])
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "🧭 Roadmap",
-    "🗓️ 4-Week Plan",
-    "🧪 Projects",
-    "📚 Resources",
-    "🧩 Skill Analysis"
-])
-
-    with tab1:
-        st.info(roadmap["similar_note"])
-        st.subheader("🎯 Goals")
-        for g in roadmap["goals"]:
-            st.write(f"✅ {g}")
-
-        if roadmap["risks"]:
-            st.subheader("⚠️ Risks to Watch")
-            for r in roadmap["risks"]:
-                st.write(f"• {r}")
-
-        st.subheader("🧠 Daily Habits")
-        for h in roadmap["habits"]:
-            st.write(f"🟩 {h}")
-
-        st.subheader("✅ Action Steps")
-        for i, s in enumerate(roadmap["steps"], 1):
-            st.write(f"{i}. {s}")
-
-    with tab2:
-        for w in roadmap["week_plan"]:
-            with st.expander(w["title"], expanded=True):
-                for b in w["bullets"]:
-                    st.write(f"• {b}")
-
-    with tab3:
-        st.subheader("Suggested Projects")
-        for p in roadmap["projects"]:
-            st.write(f"🚀 {p}")
-        st.caption("Tip: Add screenshots + README + clear results. That makes your project look strong.")
-
-    with tab4:
-        st.subheader("Recommended Resources")
-        for r in roadmap["resources"]:
-            st.write(f"📌 {r}")
-    with tab5:
-        st.subheader("🧩 Skill Analysis")
-        
-        job_choice = st.selectbox(
-            "Choose a Job Role",
-            ["Select a role"] + list(JOB_SKILL_ANALYSIS.keys())
-        )
-        
-        if job_choice != "Select a role":
-            job_info = JOB_SKILL_ANALYSIS[job_choice]
-        
-            st.subheader("🧠 Required Skills")
-            st.write(", ".join(job_info["skills"]))
-        
-            st.subheader("🧪 Sample Projects")
-            for p in job_info["projects"]:
-                st.write(f"• {p}")
-
-            st.subheader("📚 Resources")
-            for r in job_info["resources"]:
-                st.write(f"• {r}")
+# ---------------- SIDEBAR PROFILE ----------------
+with st.sidebar:
+    st.markdown("### 👤 Your Profile")
+    if st.session_state.get("profile"):
+        st.metric("🎓 GPA", st.session_state.profile.get("gpa", 0))
+        st.metric("📚 Study Hrs", st.session_state.profile.get("study_hours", 0))
+        st.metric("🎯 Interest", st.session_state.profile.get("interest", ""))
     
-            st.subheader("🎓 Your Current Skills")
-            known_skills = st.multiselect(
-                "Select skills you know",
-                job_info["skills"]
-            )
-    
-            if known_skills:
-                known, missing = compute_skill_gap(job_info["skills"], known_skills)
-    
-                progress = int(len(known) / len(job_info["skills"]) * 100)
-    
-                st.subheader("📊 Skill Match")
-                st.progress(progress / 100)
-                st.caption(f"{progress}% match")
-
-                col1, col2 = st.columns(2)
-    
-                with col1:
-                    st.markdown("### ✅ You Have")
-                    for s in known:
-                        st.success(s)
-    
-                with col2:
-                    st.markdown("### 🔴 To Learn")
-                    for s in missing:
-                        st.markdown(f"🔴 **{s}**")
-    
-                if missing:
-                    st.subheader("🛣️ Learning Order")
-                    for i, s in enumerate(missing, 1):
-                        st.write(f"{i}. Learn **{s}**")
-
-    # Download as markdown
-    md = roadmap_to_markdown(name, student_info, roadmap)
-    st.download_button(
-        label="⬇️ Download Roadmap (Markdown)",
-        data=md.encode("utf-8"),
-        file_name=f"roadmap_{(name or 'student').replace(' ','_').lower()}.md",
-        mime="text/markdown",
-    )
-    # ---------------- Skill Analysis Section (Standalone) ----------------
+    if st.button("✨ New Roadmap", use_container_width=True):
+        st.session_state.step = 1
+        st.session_state.roadmap_generated = False
     st.divider()
-    st.markdown("""
-    <div class="card">
-      <div class="card-title">🧩 Skill Gap Analysis</div>
-      <p class="card-sub">Choose a role, mark the skills you already know, and see what to learn next.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
+    st.caption("💾 Auto-saves progress")
+
+# ---------------- STEP 1: QUICK ASSESSMENT ----------------
+if st.session_state.step == 1:
     st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.header("👤 Step 1: Quick Profile")
     
-    job_choice = st.selectbox(
-        "Choose a Job Role",
-        ["Select a role"] + list(JOB_SKILL_ANALYSIS.keys()),
-        key="skill_analysis_role"
-    )
-    st.write("Selected:", job_choice)
+    col1, col2 = st.columns(2)
+    with col1:
+        name = st.text_input("Name", st.session_state.profile.get("name", ""))
+        year = st.selectbox("Year", [1,2,3,4], index=st.session_state.profile.get("year", 1)-1)
+        branch = st.selectbox("Branch", ["CSE", "ECE", "EEE", "MECH"], 
+                            index=["CSE", "ECE", "EEE", "MECH"].index(st.session_state.profile.get("branch", "CSE")))
     
-    if job_choice and job_choice != "Select a role":
-        job_info = JOB_SKILL_ANALYSIS[job_choice]
+    with col2:
+        gpa = st.slider("GPA", 0.0, 10.0, st.session_state.profile.get("gpa", 7.0), 0.1)
+        study_hours = st.slider("Daily Study Hours", 0, 12, st.session_state.profile.get("study_hours", 3))
+        sleep_hours = st.slider("Sleep Hours", 0, 12, st.session_state.profile.get("sleep_hours", 6))
     
-        st.subheader("🧠 Required Skills")
-        for s in job_info["skills"]:
-            st.write(f"• {s}")
+    interest = st.selectbox("🎯 Main Interest", 
+                          ["ML/AI", "Web Dev", "DSA", "Cybersecurity", "Embedded", "Power Systems"])
+    skill_level = st.selectbox("Skill Level", ["Beginner", "Intermediate", "Advanced"])
     
-        st.subheader("🧪 Sample Projects")
-        for p in job_info["projects"]:
-            st.write(f"• {p}")
+    if st.button("🚀 Next: Generate Roadmap", use_container_width=True):
+        profile = {
+            "name": name, "year": year, "branch": branch, "gpa": gpa,
+            "study_hours": study_hours, "sleep_hours": sleep_hours,
+            "interest": interest, "skill_level": skill_level
+        }
+        st.session_state.profile = profile
+        st.session_state.step = 2
+        st.session_state.roadmap_generated = True
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# ---------------- MAIN DASHBOARD ----------------
+elif st.session_state.roadmap_generated:
+    student_info = st.session_state.profile
+    roadmap = generate_roadmap(student_info)
+    score = readiness_score(student_info)
     
-        st.subheader("📚 Recommended Resources")
-        for r in job_info["resources"]:
-            st.write(f"• {r}")
+    # ---------------- METRICS ROW ----------------
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.header("📊 Your Dashboard")
+    col1, col2, col3, col4 = st.columns(4)
     
-        st.subheader("🎓 Your Current Skills")
-        known_skills = st.multiselect(
-            "Select skills you already know",
-            job_info["skills"],
-            key="skill_analysis_known"
-        )
+    with col1:
+        st.metric("🎓 GPA", f"{student_info['gpa']:.1f}", delta="0.3")
+    with col2:
+        st.metric("📚 Study Hrs", student_info['study_hours'], delta="+1")
+    with col3:
+        st.metric("😴 Sleep", student_info['sleep_hours'], delta=None)
+    with col4:
+        st.metric("🔥 Readiness", f"{score}%", delta="+12")
+    st.markdown('</div>', unsafe_allow_html=True)
     
-        known, missing = compute_skill_gap(job_info["skills"], known_skills)
+    # ---------------- TABS ----------------
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["🧭 Roadmap", "📊 Progress", "💼 Jobs", "🤖 Coach", "🎮 Challenges"])
     
-        progress = int((len(known) / len(job_info["skills"])) * 100) if job_info["skills"] else 0
-    
-        st.subheader("📊 Skill Match")
-        st.progress(progress / 100)
-        st.caption(f"Skill Match: {progress}%")
-    
-        col1, col2 = st.columns(2)
-    
-        with col1:
-            st.markdown("### ✅ Skills You Have")
-            if known:
-                for s in known:
-                    st.success(s)
-            else:
-                st.info("No skills selected yet.")
-    
-        with col2:
-            st.markdown("### ❌ Skills You Need to Learn")
-            if missing:
-                for s in missing:
-                    st.error(s)
-            else:
-                st.success("Great! You selected all required skills.")
-    
-        if missing:
-            st.subheader("🛣️ Recommended Learning Order")
-            for i, s in enumerate(missing, 1):
-                st.write(f"{i}. Learn **{s}**")
-    
+    with tab1:
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.subheader("🎯 Your 4-Week Plan")
+        for week in roadmap["week_plan"]:
+            with st.expander(f"📅 {week['title']}"):
+                for task in week["tasks"]:
+                    st.checkbox(task)
         st.markdown('</div>', unsafe_allow_html=True)
-        st.divider()
+        
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        col1, col2 = st.columns(2)
+        with col1:
+            st.subheader("🚀 Projects")
+            for proj in roadmap["projects"]:
+                st.write(f"• {proj}")
+        with col2:
+            st.subheader("📚 Resources")
+            for res in roadmap["resources"]:
+                st.write(f"• {res}")
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    with tab2:
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.header("📈 Track Your Progress")
+        
+        # Progress Sliders
+        col1, col2, col3, col4 = st.columns(4)
+        weeks = ["Week 1", "Week 2", "Week 3", "Week 4"]
+        for i, week in enumerate(weeks):
+            with eval(f"col{i+1}"):
+                prog = st.slider(week, 0, 100, st.session_state.progress[f"week{i+1}"], 
+                               key=f"prog_{i}")
+                st.session_state.progress[f"week{i+1}"] = prog
+        
+        # Progress Chart
+        progress_vals = [st.session_state.progress[f"week{i+1}"] for i in range(4)]
+        fig = px.line(x=weeks, y=progress_vals, markers=True,
+                     title="Your Progress", color_discrete_sequence=['#10b981'])
+        st.plotly_chart(fig, use_container_width=True)
+        
+        # Streak
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("✅ Mark Today Complete", use_container_width=True):
+                st.session_state.progress["streak"] += 1
+                st.rerun()
+        with col2:
+            st.metric("🔥 Current Streak", f"{st.session_state.progress['streak']} days")
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    with tab3:
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        job_role = st.selectbox("🎯 Target Job Role", 
+                               ["Software Developer", "Data Scientist", "Web Developer", "DevOps"])
+        
+        if job_role:
+            fit_score = calculate_job_fit(job_role, student_info)
+            
+            col1, col2 = st.columns([2,1])
+            with col1:
+                st.metric("💰 Salary Range", "₹6-15LPA")
+                st.metric("📈 Demand", "Very High")
+                st.metric("🎯 Your Fit Score", f"{fit_score}%", delta="+5")
+            with col2:
+                st.progress(fit_score/100)
+            
+            st.subheader("✅ Skills You Need")
+            skills = ["Python", "DSA", "Git", "React", "SQL"]
+            known_skills = st.multiselect("Skills you know:", skills, default=skills[:2])
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown("### 🟢 You Have")
+                for skill in known_skills:
+                    st.success(skill)
+            with col2:
+                st.markdown("### 🔴 Learn Next")
+                missing = [s for s in skills if s not in known_skills]
+                for skill in missing:
+                    st.error(skill)
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    with tab4:
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.header("🤖 AI Career Coach")
+        
+        if "messages" not in st.session_state:
+            st.session_state.messages = [{"role": "assistant", "content": "Hi! Ask me about your roadmap, projects, job prep, or motivation tips! 🚀"}]
+        
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
+        
+        if prompt := st.chat_input("Ask your coach..."):
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            with st.chat_message("user"):
+                st.markdown(prompt)
+            
+            # Mock AI responses
+            responses = {
+                "project": "Great project idea! Start with a simple version first, then add features. Need GitHub setup help?",
+                "motivation": "Remember: consistency > intensity. 30 mins daily = results in 90 days! 💪",
+                "job": f"For your {student_info['gpa']} GPA + {student_info['interest']}, target SDE-1 roles first.",
+                "roadmap": "Week 1 focus: complete 80% tasks. Track in Progress tab!"
+            }
+            
+            response = responses.get(random.choice(list(responses.keys())), "Great question! Here's my advice...")
+            with st.chat_message("assistant"):
+                st.markdown(response)
+                st.session_state.messages.append({"role": "assistant", "content": response})
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    with tab5:
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.header("🎮 Weekly Challenges")
+        
+        challenges = [
+            "Solve 5 LeetCode Easy problems",
+            "Build a simple calculator app", 
+            "Record 2-min self-intro video",
+            "Write 1 LinkedIn post about learning",
+            "Complete Week 1 roadmap tasks"
+        ]
+        
+        challenge = random.choice(challenges)
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown(f"### 🎯 **This Week's Challenge**")
+            st.markdown(f"**{challenge}**")
+        
+        with col2:
+            if st.button(f"✅ I Completed It!", use_container_width=True):
+                st.session_state.challenges_completed += 1
+                st.balloons()
+                st.success("🎉 Challenge completed! You're crushing it!")
+                st.rerun()
+        
+        st.metric("🏆 Challenges Completed", st.session_state.challenges_completed)
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    # ---------------- DOWNLOAD ----------------
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    md_content = f"# Roadmap for {student_info.get('name', 'Student')}\n\n"
+    md_content += f"**Readiness Score:** {score}%\n\n"
+    md_content += "## Progress\n" + str(st.session_state.progress) + "\n\n"
+    
+    st.download_button(
+        "⬇️ Download Full Roadmap (MD)",
+        data=md_content,
+        file_name=f"roadmap_{student_info.get('name', 'student')}.md",
+        use_container_width=True
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
 
-# ---------------- Dataset preview ----------------
-with st.expander("📊 Sample Student Dataset (Preview)", expanded=False):
-    st.dataframe(data, use_container_width=True)
+# ---------------- DAILY TIP ----------------
+if not st.session_state.daily_tip_seen:
+    with st.sidebar:
+        tip = random.choice(DAILY_TIPS)
+        st.info(f"💡 **Daily Tip**: {tip}")
+        if st.button("✅ Got it"):
+            st.session_state.daily_tip_seen = True
+            st.rerun()
 
-st.caption("Mini Project | Student Skill Roadmap | Streamlit Web App")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# ---------------- FOOTER ----------------
+st.markdown("---")
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.caption("
